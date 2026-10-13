@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<title>So sánh báo giá thiết bị – Veday Home</title>
+<style>
+  :root{
+    --green:#0b5c3b; --green2:#0e7a4e; --light:#f2f7f4; --line:#cfe0d7;
+    --gold:#b8860b; --red:#b8312f; --ink:#15201b; --muted:#5a6b63; --bg:#f4f7f5;
+  }
+  *{ box-sizing:border-box; }
+  body{ font-family:system-ui,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink); margin:0; padding:20px; background:var(--bg); line-height:1.5; font-size:14.5px; }
+  h1{ color:var(--green); font-size:23px; margin:0 0 3px; }
+  h2{ color:var(--green); font-size:17px; margin:24px 0 10px; }
+  .sub{ color:var(--muted); font-size:13px; margin:0; }
+  a{ color:var(--green2); }
+  header{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap; }
+  .lang{ background:#fff; border:1px solid var(--line); color:var(--green); border-radius:8px; padding:9px 14px; font-weight:700; cursor:pointer; font-size:13px; }
+  .lang:hover{ background:var(--light); }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:18px 0; }
+  .card{ background:#fff; border-radius:12px; padding:13px 15px; box-shadow:0 1px 4px rgba(0,0,0,.06); border:1px solid #eaf1ed; }
+  .card .label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.5px; color:#7a8f89; }
+  .card .value{ font-size:19px; font-weight:800; margin-top:4px; color:var(--green); }
+  .card .note{ font-size:11px; color:#8a9d97; margin-top:2px; }
+  .card.best .value{ color:var(--green2); }
+  .card.save .value{ color:var(--gold); }
+
+  .panel{ background:#fff; border-radius:12px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,.06); margin-bottom:18px; border:1px solid #eaf1ed; }
+  .panel h2{ margin-top:0; }
+
+  .toolbar{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .toolbar input[type=text], .toolbar select{ padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:14px; background:#fff; }
+  .toolbar input[type=text]{ width:190px; }
+  .seg{ display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .seg button{ background:#fff; border:0; padding:8px 14px; cursor:pointer; font-size:13px; color:var(--green); font-weight:600; }
+  .seg button.on{ background:var(--green); color:#fff; }
+  .chk{ display:inline-flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:#fff; border:1px solid var(--line); border-radius:8px; padding:7px 10px; cursor:pointer; }
+  .chk input{ margin:0; }
+
+  button.btn{ background:var(--green); color:#fff; border:none; padding:9px 15px; border-radius:8px; font-size:13px; cursor:pointer; font-weight:600; }
+  button.btn:hover{ background:var(--green2); }
+  button.ghost{ background:var(--light); color:var(--green); border:1px solid var(--line); }
+  button.ghost:hover{ background:#e5efe9; }
+  button.tiny{ padding:5px 10px; font-size:12px; }
+
+  /* ---- comparison cards ---- */
+  .cmp{ border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:14px; background:#fff; }
+  .cmp-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px; margin-bottom:10px; }
+  .cmp-head .name{ font-size:15px; font-weight:800; color:var(--ink); }
+  .cmp-head .spec{ font-size:12.5px; color:var(--muted); }
+  .cmp-head .spread{ font-size:12px; color:var(--gold); font-weight:700; margin-left:auto; }
+  .chip{ display:inline-block; font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:10px; background:var(--light); color:var(--green); }
+  .chip.cat{ background:#e8f0ea; color:var(--green); }
+
+  .offers{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; }
+  .offer{ border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#fbfdfc; position:relative; }
+  .offer .ncc{ font-weight:800; font-size:13.5px; }
+  .offer .model{ font-size:12px; color:var(--muted); min-height:16px; }
+  .offer .price{ font-size:16px; font-weight:800; color:var(--ink); margin-top:6px; font-variant-numeric:tabular-nums; }
+  .offer .total{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+  .offer .chips{ margin:7px 0 8px; display:flex; flex-wrap:wrap; gap:4px; }
+  .inc{ font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:9px; }
+  .inc.yes{ background:#e2f4e8; color:var(--green2); }
+  .inc.no{ background:#f4f4f4; color:#a0a0a0; text-decoration:line-through; }
+  .inc.w{ background:#fff2d6; color:var(--gold); }
+  .offer.best{ border-color:var(--green2); box-shadow:0 0 0 2px rgba(14,122,78,.15); }
+  .offer.best::after{ content:attr(data-best); position:absolute; top:-9px; left:10px; background:var(--green2); color:#fff; font-size:10px; font-weight:700; padding:1px 8px; border-radius:9px; }
+  .offer.chosen{ border-color:var(--gold); box-shadow:0 0 0 2px rgba(184,134,11,.2); background:#fffbf0; }
+  .offer .acts{ display:flex; gap:6px; }
+  .offer .note{ font-size:11px; color:var(--muted); margin-top:5px; font-style:italic; }
+
+  .offer .rank{ position:absolute; top:8px; right:10px; font-size:11px; font-weight:800; color:#b9c4bf; }
+  .offer.best .rank{ color:var(--green2); }
+  .offer .save{ font-size:11px; color:var(--red); font-weight:700; margin-top:1px; }
+  input.qin{ width:58px; padding:3px 5px; border:1px solid var(--line); border-radius:6px; font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; }
+  .plan-sup{ border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:14px; }
+  .plan-sup h3{ margin:0 0 9px; color:var(--green); font-size:15px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .plan-sup h3 .sub2{ font-size:12px; color:var(--muted); font-weight:500; }
+  .plan-total{ font-weight:800; }
+  .mini{ font-size:11px; color:var(--muted); }
+  .stars .st{ cursor:pointer; color:#c8d2cd; font-size:15px; }
+  .stars .st.on{ color:#e6a700; }
+  .starsrow{ margin:4px 0 2px; }
+  .links{ display:flex; gap:6px; margin:2px 0 8px; flex-wrap:wrap; }
+  .lbtn{ font-size:11px; text-decoration:none; background:var(--light); border:1px solid var(--line); color:var(--green); border-radius:8px; padding:2px 8px; }
+  .lbtn:hover{ background:#e5efe9; }
+  .ibtn{ background:none; border:0; cursor:pointer; font-size:15px; color:#c8d2cd; padding:0 2px; line-height:1; }
+  .ibtn.on{ color:#e6a700; }
+  .prange{ width:98px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-size:13px; background:#fff; }
+  .chg{ color:var(--red); font-weight:700; }
+  /* ---- table ---- */
+  table{ border-collapse:collapse; width:100%; font-size:13px; }
+  th,td{ border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; }
+  th{ background:var(--green); color:#fff; font-weight:600; font-size:12px; position:sticky; top:0; }
+  tr:nth-child(even) td{ background:var(--light); }
+  td.num{ text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  td.c{ text-align:center; white-space:nowrap; }
+  .tblwrap{ overflow:auto; max-height:70vh; border-radius:10px; border:1px solid var(--line); }
+  .tag{ display:inline-block; font-size:10px; font-weight:700; padding:1px 6px; border-radius:8px; background:#eef4f0; color:var(--green2); }
+  .tag.sample{ background:#fff2d6; color:var(--gold); }
+  .b1win{ color:var(--green2); font-weight:800; }
+
+  .note-box{ background:#eef4f0; border-left:5px solid var(--green2); border-radius:8px; padding:11px 14px; margin:12px 0; font-size:13px; }
+  .warn-box{ background:#fff8e6; border-left:5px solid var(--gold); border-radius:8px; padding:11px 14px; margin:12px 0; font-size:13px; }
+  .legend{ font-size:12px; color:var(--muted); }
+  .empty{ text-align:center; color:var(--muted); padding:30px; }
+  .sumtable td{ font-variant-numeric:tabular-nums; }
+
+  form.entry{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; align-items:end; }
+  form.entry label{ display:flex; flex-direction:column; font-size:11.5px; color:var(--muted); gap:3px; }
+  form.entry input, form.entry select{ padding:8px 9px; border:1px solid var(--line); border-radius:8px; font-size:13.5px; width:100%; background:#fff; }
+  form.entry .full{ grid-column:1/-1; }
+  details.entrybox summary{ cursor:pointer; font-weight:700; color:var(--green); }
+
+  @media print{
+    body{ padding:6mm; background:#fff; font-size:11.5px; }
+    .noprint{ display:none !important; }
+    .panel{ box-shadow:none; border:1px solid var(--line); page-break-inside:auto; }
+    .cmp, .offer{ page-break-inside:avoid; }
+    th{ position:static; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1 data-vi="So sánh báo giá thiết bị – Veday Home" data-en="Equipment Price Comparison – Veday Home"></h1>
+    <p class="sub" data-vi="Căn hộ Veday Home · Đà Nẵng · giai đoạn hoàn thiện · so sánh báo giá từ nhiều nhà cung cấp. Giá chỉ để tham khảo, cần xác nhận lại với nhà cung cấp."
+       data-en="Veday Home · Đà Nẵng · finishing stage · compare quotes from multiple suppliers. Prices are for reference; confirm with the supplier."></p>
+  </div>
+  <div style="display:flex;gap:8px;" class="noprint">
+    <button class="lang" id="langBtn">EN</button>
+    <button class="lang" onclick="window.print()" data-vi="🖨 In" data-en="🖨 Print"></button>
+  </div>
+</header>
+
+<!-- ============ KPIs ============ -->
+<div class="grid" id="kpis"></div>
+
+<div class="note-box" data-vi="<b>Cách dùng:</b> dùng ô lọc để tìm món (lọc theo <b>tên món</b> / NCC; tick “<b>Chỉ món có ≥2 báo giá</b>” để so sánh). Mở <b>So sánh</b>: ô viền xanh + <b>#1</b> = rẻ nhất, nhập <b>SL cần mua</b> để tính thành tiền. Bấm <b>Chọn mua</b> → món vào <b>🛒 Kế hoạch mua</b> theo NCC (có nút Copy tin nhắn gửi NCC)."
+  data-en="<b>How to use:</b> use the filters to find an item (filter by <b>item name</b> / supplier; tick “<b>Only items with 2+ quotes</b>” to compare). Open <b>Compare</b>: green box + <b>#1</b> = cheapest, set <b>Qty</b> to see the total. Click <b>Pick</b> → the item goes into the <b>🛒 Purchase plan</b> by supplier (with a copy-message button)."></div>
+
+<!-- ============ TOOLBAR ============ -->
+<div class="panel noprint">
+  <div class="toolbar">
+    <div class="seg" id="viewSeg">
+      <button data-view="cmp" class="on" data-vi="🔀 So sánh" data-en="🔀 Compare"></button>
+      <button data-view="all" data-vi="📋 Bảng tất cả" data-en="📋 All quotes"></button>
+    </div>
+    <input type="text" id="q" data-ph-vi="🔎 Tìm hạng mục / NCC…" data-ph-en="🔎 Search item / supplier…">
+    <select id="fcat"></select>
+    <select id="fsup"></select>
+    <select id="fitem"></select>
+    <input type="number" id="pmin" class="prange" data-vi="Giá từ" data-en="Price ≥">
+    <input type="number" id="pmax" class="prange" data-vi="đến" data-en="≤">
+    <label class="chk"><input type="checkbox" id="fInstall"><span data-vi="Có lắp đặt" data-en="Includes install"></span></label>
+    <label class="chk"><input type="checkbox" id="fDelivery"><span data-vi="Có vận chuyển" data-en="Includes delivery"></span></label>
+    <label class="chk"><input type="checkbox" id="fVat"><span data-vi="Có VAT" data-en="Includes VAT"></span></label>
+    <label class="chk"><input type="checkbox" id="fMulti"><span data-vi="Chỉ món có ≥2 báo giá" data-en="Only items with 2+ quotes"></span></label>
+    <label class="chk"><input type="checkbox" id="fImp"><span data-vi="Chỉ món quan trọng ⭐" data-en="Only important ⭐"></span></label>
+    <select id="fsort">
+      <option value="cat" data-vi="Sắp xếp: Hạng mục" data-en="Sort: Category"></option>
+      <option value="save" data-vi="Sắp xếp: Tiết kiệm nhiều" data-en="Sort: Biggest saving"></option>
+      <option value="price" data-vi="Sắp xếp: Giá thấp" data-en="Sort: Lowest price"></option>
+      <option value="imp" data-vi="Sắp xếp: Ưu tiên món quan trọng" data-en="Sort: Important first"></option>
+    </select>
+    <button class="btn ghost" onclick="exportCSV()" data-vi="💾 Export CSV" data-en="💾 Export CSV"></button>
+    <button class="btn ghost" onclick="document.getElementById('importFile').click()" data-vi="📥 Import CSV" data-en="📥 Import CSV"></button>
+    <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importCSV(this)">
+    <button class="btn ghost" onclick="loadIngested()" data-vi="📥 Nạp lại dữ liệu báo giá" data-en="📥 Reload quotes"></button>
+    <button class="btn ghost" onclick="clearAll()" data-vi="🧹 Xóa hết báo giá" data-en="🧹 Clear all quotes"></button>
+  </div>
+</div>
+
+<!-- ============ MAIN ============ -->
+<div id="view"></div>
+
+<!-- ============ PURCHASE PLAN ============ -->
+<div class="panel">
+  <h2 data-vi="🛒 Kế hoạch mua – theo nhà cung cấp" data-en="🛒 Purchase plan – by supplier"></h2>
+  <div id="plan"></div>
+</div>
+
+<!-- ============ SUPPLIER SUMMARY ============ -->
+<div class="panel">
+  <h2 data-vi="🏬 Tổng hợp theo nhà cung cấp" data-en="🏬 Summary by supplier"></h2>
+  <div id="supplierSummary"></div>
+</div>
+
+<!-- ============ ENTRY FORM ============ -->
+<div class="panel noprint">
+  <details class="entrybox" id="entryBox">
+    <summary data-vi="➕ Thêm / sửa báo giá" data-en="➕ Add / edit a quote"></summary>
+    <div style="margin-top:12px;">
+      <form class="entry" id="entryForm" onsubmit="return saveOffer(event)">
+        <input type="hidden" id="e_id">
+        <label><span data-vi="Hạng mục (nhóm)" data-en="Category"></span>
+          <select id="e_cat" required></select></label>
+        <label><span data-vi="Tên hạng mục" data-en="Item name"></span>
+          <input id="e_item" list="itemList" required></label>
+        <label><span data-vi="Quy cách / mô tả" data-en="Spec / size"></span>
+          <input id="e_spec"></label>
+        <label><span data-vi="Đơn vị tính" data-en="Unit"></span>
+          <input id="e_unit" list="unitList" placeholder="cái / bộ / m2 / m"></label>
+        <label><span data-vi="Số lượng" data-en="Qty"></span>
+          <input id="e_qty" type="number" step="any" min="0" value="1"></label>
+        <label><span data-vi="Nhà cung cấp" data-en="Supplier"></span>
+          <input id="e_supplier" list="supList" required></label>
+        <label><span data-vi="Hãng / mã model" data-en="Brand / model"></span>
+          <input id="e_model"></label>
+        <label><span data-vi="Đơn giá (VND)" data-en="Unit price (VND)"></span>
+          <input id="e_price" type="number" step="any" min="0" required></label>
+        <label><span data-vi="Bảo hành (tháng)" data-en="Warranty (months)"></span>
+          <input id="e_warranty" type="number" step="1" min="0" value="0"></label>
+        <label><span data-vi="Nguồn báo giá" data-en="Quote source"></span>
+          <select id="e_source">
+            <option value="pdf">PDF</option><option value="excel">Excel</option>
+            <option value="photo" data-vi="Ảnh chụp" data-en="Photo">Ảnh chụp</option>
+            <option value="manual" data-vi="Gõ tay" data-en="Typed">Gõ tay</option>
+          </select></label>
+        <label class="full"><span data-vi="Giá đã gồm (tick những gì báo giá bao gồm)" data-en="What the price includes (tick all that apply)"></span></label>
+        <label class="chk" style="flex-direction:row;grid-column:span 1;"><input type="checkbox" id="e_install"><span data-vi="Công lắp đặt" data-en="Installation"></span></label>
+        <label class="chk" style="flex-direction:row;"><input type="checkbox" id="e_delivery"><span data-vi="Vận chuyển" data-en="Delivery"></span></label>
+        <label class="chk" style="flex-direction:row;"><input type="checkbox" id="e_vat"><span data-vi="VAT / thuế" data-en="VAT / tax"></span></label>
+        <label class="full"><span data-vi="Ghi chú" data-en="Note"></span>
+          <input id="e_note"></label>
+        <div class="full" style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="submit" class="btn" data-vi="💾 Lưu báo giá" data-en="💾 Save quote"></button>
+          <button type="button" class="btn ghost" onclick="resetForm()" data-vi="Xóa trắng form" data-en="Clear form"></button>
+          <span class="legend" id="formHint" style="align-self:center;"></span>
+        </div>
+      </form>
+      <datalist id="itemList"></datalist>
+      <datalist id="unitList"><option value="cái"><option value="bộ"><option value="m2"><option value="m"><option value="viên"><option value="thùng"><option value="gói"><option value="bình"></datalist>
+      <datalist id="supList"></datalist>
+    </div>
+  </details>
+  <div class="legend" style="margin-top:10px;" data-vi="Dữ liệu được lưu tự động trong trình duyệt (localStorage) trên máy này. Nhấn Import/Export CSV để chuyển dữ liệu giữa các máy hoặc sao lưu."
+       data-en="Data is auto-saved in this browser (localStorage) on this device. Use Import/Export CSV to move data between devices or back it up."></div>
+</div>
+
+<script>
+/* =====================================================================
+   Veday Home – Equipment price comparison.  Single-file, no internet.
+   ===================================================================== */
+
+var CATS = [
+  {k:'pccc',  vi:'PCCC (phòng cháy chữa cháy)', en:'Fire safety (PCCC)'},
+  {k:'bep_tb',vi:'Thiết bị bếp',                en:'Kitchen appliances'},
+  {k:'bep_nt',vi:'Nội thất bếp',                en:'Kitchen furniture'},
+  {k:'vs',    vi:'Thiết bị vệ sinh',            en:'Sanitaryware'},
+  {k:'gach',  vi:'Gạch ốp lát',                 en:'Tiles'},
+  {k:'dien',  vi:'Điện & chiếu sáng',           en:'Electrical & lighting'},
+  {k:'smarthome', vi:'Nhà thông minh',          en:'Smart home'},
+  {k:'nlmt',  vi:'Điện mặt trời (NLMT)',        en:'Solar (PV)'},
+  {k:'nt',    vi:'Nội thất',                    en:'Furniture'},
+  {k:'khac',  vi:'Khác',                        en:'Other'}
+];
+
+var ITEMS = {
+  pccc:  ['Bình chữa cháy bột ABC','Bình chữa cháy CO2','Đầu báo khói','Đầu báo nhiệt','Đèn exit (thoát hiểm)','Đèn sự cố','Trung tâm/tủ báo cháy','Tủ chữa cháy vách tường','Vòi chữa cháy','Đầu phun Sprinkler','Biển báo PCCC','Bơm chữa cháy','Thẩm duyệt – kiểm định PCCC'],
+  bep_tb:['Bếp từ âm','Bếp gas âm','Máy hút mùi','Tủ lạnh','Máy giặt','Lò vi sóng','Máy rửa bát','Chậu rửa chén','Vòi rửa chén','Ấm siêu tốc','Nồi cơm điện','Khay úp bát inox'],
+  bep_nt:['Tủ bếp dưới','Tủ bếp trên','Kệ mở','Cột tủ lạnh','Mặt bàn bếp (đá)','Ốp tường bếp','Bàn ăn','Ghế / đôn ngồi'],
+  vs:    ['Bồn cầu','Sen tắm (mưa + tay sen)','Vách tắm kính khung đen','Vanity + chậu rửa','Vòi chậu rửa','Gương','Quạt thông gió trần','Giá khăn','Phụ kiện vệ sinh đồng bộ','Phễu thoát sàn','Cửa phòng tắm','Máy nước nóng'],
+  gach:  ['Gạch ốp tường','Gạch terrazzo','Gạch bông hoa văn','Gạch sàn','Gạch len chân tường','Gạch khu tắm'],
+  dien:  ['Đèn downlight âm trần','Đèn hắt LED','Quạt trần','Ổ cắm – công tắc','Aptomat','Đèn rọi tường (sconce)'],
+  nt:    ['Rèm cửa','Tay nắm / khóa cửa','Sơn tường','Cửa gỗ','Len chân tường','Tủ quần áo'],
+  khac:  []
+};
+
+/* ---- illustrative sample rows (clearly tagged, removable) ---- */
+var INGESTED = [
+  {cat:"bep_tb",item:"Bếp từ âm",spec:"Đôi điện từ, mặt kính",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Sunhouse SHB5143",price:2800000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh báo giá; giá 2.800.000; chưa rõ gồm lắp đặt/VAT",source:"photo"},
+  {cat:"bep_tb",item:"Máy giặt",spec:"Giặt 10,5kg / sấy 7kg",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Toshiba TWD-T21BU115UWV",price:9400000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh báo giá; giá 9.400.000",source:"photo"},
+  {cat:"bep_tb",item:"Máy hút mùi",spec:"Áp tường, 3 tốc độ",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Sunhouse SHB6128",price:2400000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh (giá 2.400.000; giá niêm yết 3.290.000)",source:"photo"},
+  {cat:"bep_tb",item:"Tủ lạnh",spec:"2 cửa, ~130L",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Aqua AQR-T160FA(BS)",price:4150000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh báo giá; giá 4.150.000",source:"photo"},
+  {cat:"vs",item:"Máy nước nóng",spec:"Gián tiếp, Ariston Andris R",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Ariston Andris",price:2450000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh báo giá; giá 2.450.000",source:"photo"},
+  {cat:"dien",item:"Quạt trần",spec:"6 cánh + đèn LED",unit:"cái",qty:1,supplier:"Thúy Mai",model:"Nanoco NCF5462-PL",price:2150000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh báo giá; giá 2.150.000",source:"photo"},
+  {cat:"dien",item:"Điều hòa",spec:"Casper 1 chiều inverter 9000BTU",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Casper QC-09IU36A",price:5200000,install:false,delivery:true,vat:false,warranty:36,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"vs",item:"Máy nước nóng",spec:"Asiatie 2026, 15L, 2500W",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Asiatie BN-BV15A",price:1000000,install:false,delivery:true,vat:false,warranty:0,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"bep_tb",item:"Bếp từ âm",spec:"Đôi điện từ, 2×2000W",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Sunhouse SHB5143",price:2550000,install:false,delivery:true,vat:false,warranty:36,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"nt",item:"Khóa cửa",spec:"Khóa vân tay thông minh",unit:"bộ",qty:1,supplier:"Minh Tiến",model:"Velox G1",price:2000000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"bep_tb",item:"Máy hút mùi",spec:"Áp tường, 650 m3/h",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Makano MKH-000006",price:1350000,install:false,delivery:true,vat:false,warranty:1,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"dien",item:"Quạt trần",spec:"6 cánh + đèn LED",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Nanoco NCF5462-PL",price:2150000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"bep_tb",item:"Tủ lạnh",spec:"Funiki 120 lít",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Funiki FR-125CL1",price:3595000,install:false,delivery:true,vat:false,warranty:30,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"bep_tb",item:"Máy giặt",spec:"Giặt sấy Toshiba 10,5kg/7kg",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Toshiba TWD-T21BU115UWV(MG)",price:9800000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"dien",item:"Quạt đảo trần",spec:"Asia, 3 cấp độ gió",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Asia X16001",price:630000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Minh Tiến 08/10/2026; SL báo giá 12; đã gồm vận chuyển tới công trình Đà Nẵng, CHƯA gồm công lắp đặt & vật tư",source:"pdf"},
+  {cat:"khac",item:"Bồn nước",spec:"Inox Tân Á Đại Thành 1500L ngang",unit:"cái",qty:1,supplier:"Minh Tiến",model:"Tân Á Đại Thành Ø1140",price:5600000,install:false,delivery:true,vat:false,warranty:180,note:"Báo giá Minh Tiến; SL 1",source:"pdf"},
+  {cat:"smarthome",item:"Đầu ghi camera",spec:"IP 8 kênh HIKVISION",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"DS-7108NI-Q1/M",price:1410000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Ổ cứng camera",spec:"SEAGATE Skyhawk 2TB",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"ST2000VX015",price:2962500,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520 (lưu 18-25 ngày)",source:"pdf"},
+  {cat:"smarthome",item:"Switch PoE",spec:"8 cổng PoE HIKVISION",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"DS-3E0409P-EI/M",price:1007500,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Camera IP",spec:"2MP bán cầu HIKVISION",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"DS-2CD1121G0-I",price:805000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520 (SL 4)",source:"pdf"},
+  {cat:"smarthome",item:"Router cân bằng tải",spec:"TP-Link ER605",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"TP-Link ER605",price:1382500,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Router WiFi",spec:"WiFi 6 AX1500 TP-Link Archer AX12",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"Archer AX12",price:910530,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520 (SL 9)",source:"pdf"},
+  {cat:"smarthome",item:"Switch 16 cổng",spec:"TP-Link TL-SG1016D Gigabit",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"TL-SG1016D",price:1319250,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Tủ rack",spec:"4U treo tường DANA-RACK",unit:"cái",qty:1,supplier:"DNE (Smarthome Aqara)",model:"DANA-RACK 4U400",price:1125000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Nhân công lắp đặt",spec:"Lắp đặt hệ thống camera + wifi",unit:"gói",qty:1,supplier:"DNE (Smarthome Aqara)",model:"",price:3500000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"smarthome",item:"Vật tư phụ",spec:"Vật tư phụ camera/wifi",unit:"gói",qty:1,supplier:"DNE (Smarthome Aqara)",model:"",price:700000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá DNE 30/06/2026; giá sau chiết khấu; nhân công & vật tư phụ tính riêng; tổng NCC ghi 23.696.520",source:"pdf"},
+  {cat:"nlmt",item:"Tấm pin NLMT",spec:"Jinko Tiger Pro 625W N-type",unit:"tấm",qty:1,supplier:"Sinpower",model:"Jinko 66HL4M-BDV 625W",price:2470000,install:true,delivery:true,vat:false,warranty:144,note:"Báo giá Sinpower 29/06/2026; hệ hòa lưới có lưu trữ 5kWp; trọn gói gồm công lắp đặt & vận chuyển; tổng 99.215.000 (SL 8)",source:"pdf"},
+  {cat:"nlmt",item:"Inverter NLMT",spec:"Hybrid 6kW Solis",unit:"bộ",qty:1,supplier:"Sinpower",model:"Solis S6-EH1P6K-L-Plus",price:22500000,install:true,delivery:true,vat:false,warranty:60,note:"Báo giá Sinpower 29/06/2026; hệ hòa lưới có lưu trữ 5kWp; trọn gói gồm công lắp đặt & vận chuyển; tổng 99.215.000",source:"pdf"},
+  {cat:"nlmt",item:"Pin lưu trữ",spec:"GOTION 5kWh LFP",unit:"bộ",qty:1,supplier:"Sinpower",model:"GOTION HSD51.2-02C5L",price:23125000,install:true,delivery:true,vat:false,warranty:60,note:"Báo giá Sinpower 29/06/2026; hệ hòa lưới có lưu trữ 5kWp; trọn gói gồm công lắp đặt & vận chuyển; tổng 99.215.000",source:"pdf"},
+  {cat:"nlmt",item:"Khung mái & điện & phụ kiện",spec:"Khung mái bằng, cáp solar/AC, tủ điện ATS, phụ kiện, công lắp đặt + vận chuyển (trọn gói)",unit:"gói",qty:1,supplier:"Sinpower",model:"",price:33830000,install:true,delivery:true,vat:false,warranty:60,note:"Báo giá Sinpower 29/06/2026; hệ hòa lưới có lưu trữ 5kWp; trọn gói gồm công lắp đặt & vận chuyển; tổng 99.215.000 (gộp phần B+C+D+E)",source:"pdf"},
+  {cat:"nlmt",item:"Tấm pin NLMT",spec:"Tale Sun 630Wp",unit:"tấm",qty:1,supplier:"Sinpower",model:"Tale Sun 630Wp",price:2488500,install:true,delivery:true,vat:true,warranty:180,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT) (SL 18)",source:"xlsx"},
+  {cat:"nlmt",item:"Inverter NLMT",spec:"Hybrid 3-phase 10kW Solis",unit:"bộ",qty:1,supplier:"Sinpower",model:"Solis S6-EH3P10K02-NVYD-L",price:42850000,install:true,delivery:true,vat:true,warranty:60,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Tủ điện NLMT",spec:"Tủ điện 10KW 3 pha áp thấp",unit:"bộ",qty:1,supplier:"Sinpower",model:"",price:7020000,install:true,delivery:true,vat:true,warranty:36,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Khung đỡ pin",spec:"Sắt hộp 1.4mm, kẹp nhôm, bulong inox 304 (không VAT)",unit:"gói",qty:1,supplier:"Sinpower",model:"",price:24000000,install:true,delivery:true,vat:false,warranty:12,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Nhân công lắp đặt",spec:"Nhân công lắp đặt + cẩu + đấu nối + chạy thử (không VAT)",unit:"gói",qty:1,supplier:"Sinpower",model:"",price:14742000,install:true,delivery:true,vat:false,warranty:0,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Vật tư phụ NLMT",spec:"Vật tư phụ hoàn thiện (không VAT)",unit:"gói",qty:1,supplier:"Sinpower",model:"",price:1350000,install:true,delivery:true,vat:false,warranty:0,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Vận chuyển NLMT",spec:"Thuê xe tải 1 chuyến (không VAT)",unit:"chuyến",qty:1,supplier:"Sinpower",model:"",price:1100000,install:false,delivery:true,vat:false,warranty:0,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"nlmt",item:"Dây cáp & phụ kiện NLMT",spec:"Dây CV/CVV/DC, pát U inox, cọc tiếp địa, dây te CV",unit:"gói",qty:1,supplier:"Sinpower",model:"",price:8159000,install:true,delivery:true,vat:true,warranty:12,note:"Báo giá Sinpower (bg 10KW 3 pha) địa chỉ 338/16/9 PCT; trọn gói thi công; tổng 151.614.000 (=110.422.000 có VAT + 41.192.000 không VAT)",source:"xlsx"},
+  {cat:"pccc",item:"Trung tâm báo cháy",spec:"Tự động 4 zone + nguồn dự phòng 24V (gồm kiểm định)",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Đài Loan",price:6500000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000",source:"pdf"},
+  {cat:"pccc",item:"Đầu báo khói",spec:"Gồm kiểm định",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Đài Loan",price:355000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 14)",source:"pdf"},
+  {cat:"pccc",item:"Đầu báo nhiệt",spec:"Gồm kiểm định",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Đài Loan",price:265000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 3)",source:"pdf"},
+  {cat:"pccc",item:"Chuông/đèn/nút nhấn khẩn cấp",spec:"Bộ, gồm kiểm định",unit:"bộ",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Đài Loan",price:860000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 3)",source:"pdf"},
+  {cat:"pccc",item:"Đèn báo phòng",spec:"",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:85000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 6)",source:"pdf"},
+  {cat:"pccc",item:"Đèn chiếu sáng sự cố",spec:"Gồm kiểm định",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:350000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 4)",source:"pdf"},
+  {cat:"pccc",item:"Đèn exit",spec:"Chỉ dẫn thoát nạn, gồm kiểm định",unit:"cái",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:350000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 4)",source:"pdf"},
+  {cat:"pccc",item:"Nội quy tiêu lệnh PCCC",spec:"",unit:"bộ",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:85000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 3)",source:"pdf"},
+  {cat:"pccc",item:"Bình chữa cháy khí MT3",spec:"Gồm kiểm định",unit:"bình",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:550000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 3)",source:"pdf"},
+  {cat:"pccc",item:"Bình chữa cháy bột MFZ4",spec:"Gồm kiểm định",unit:"bình",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:420000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 3)",source:"pdf"},
+  {cat:"pccc",item:"Cáp tín hiệu báo cháy",spec:"2x0.75mm2 chống cháy",unit:"mét",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:21000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 450)",source:"pdf"},
+  {cat:"pccc",item:"Cáp nguồn đèn sự cố/exit",spec:"2x1.0mm2",unit:"mét",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Cadivi/VN",price:15000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 100)",source:"pdf"},
+  {cat:"pccc",item:"Ống bảo vệ dây",spec:"",unit:"mét",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:9000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000 (SL 450)",source:"pdf"},
+  {cat:"pccc",item:"Vật tư phụ PCCC",spec:"Tít kê, đinh vít, keo, hộp chia, măng sông, cùm...",unit:"lô",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"Việt Nam",price:5000000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000",source:"pdf"},
+  {cat:"pccc",item:"Tủ dụng cụ CNCH + mặt nạ",spec:"Tủ 600x400x200 + dụng cụ cứu nạn + 14 mặt nạ phòng độc",unit:"tủ",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"VN/Trung Quốc",price:3750000,install:false,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000",source:"pdf"},
+  {cat:"pccc",item:"Nhân công lắp đặt PCCC",spec:"Lắp đặt toàn bộ hệ thống + hướng dẫn sử dụng",unit:"hệ thống",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"",price:25000000,install:true,delivery:false,vat:false,warranty:12,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000",source:"pdf"},
+  {cat:"pccc",item:"Hồ sơ & nghiệm thu PCCC",spec:"Thiết kế cơ sở + hồ sơ hoàn công + mời PCCC kiểm tra cấp biên bản",unit:"hệ thống",qty:1,supplier:"Thanh Đà Phát (PCCC)",model:"",price:35000000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá Thanh Đà Phát 05/10/2026; 338/16/9 Phan Châu Trinh; đơn giá đã gồm kiểm định thiết bị & nghiệm thu PCCC; BH 12 tháng; tổng trước thuế 105.105.000",source:"pdf"},
+  {cat:"pccc",item:"Trung tâm báo cháy",spec:"5 zone, Yunyang Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Yunyang",price:8500000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000",source:"xlsx"},
+  {cat:"pccc",item:"Đầu báo nhiệt",spec:"kèm đế, Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Taiwan",price:285000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 4)",source:"xlsx"},
+  {cat:"pccc",item:"Đầu báo khói",spec:"quang điện kèm đế, Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Taiwan",price:430000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 24)",source:"xlsx"},
+  {cat:"pccc",item:"Chuông báo cháy",spec:"24VDC, Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Taiwan",price:400000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Đèn báo cháy",spec:"Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Taiwan",price:290000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Nút nhấn báo cháy",spec:"Taiwan",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Taiwan",price:350000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Đèn báo phòng",spec:"Sino/VN",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Sino",price:175000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 8)",source:"xlsx"},
+  {cat:"pccc",item:"Đèn chiếu sáng sự cố",spec:"Trung Quốc",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ",price:300000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 6)",source:"xlsx"},
+  {cat:"pccc",item:"Đèn exit",spec:"Chỉ dẫn thoát hiểm, Trung Quốc",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ",price:260000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Aptomat đèn exit/sự cố",spec:"Panasonic",unit:"cái",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"Panasonic",price:400000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 1)",source:"xlsx"},
+  {cat:"pccc",item:"Cáp nguồn đèn sự cố/exit",spec:"2x1.0mm2 chống cháy",unit:"mét",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"VN/TQ",price:24000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 250)",source:"xlsx"},
+  {cat:"pccc",item:"Cáp tín hiệu báo cháy",spec:"2x1.0mm2 chống cháy",unit:"mét",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"VN/TQ",price:24000,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 450)",source:"xlsx"},
+  {cat:"pccc",item:"Ống bảo vệ dây",spec:"D16 + phụ kiện/Sp",unit:"mét",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"SP/VN",price:13800,install:true,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 550)",source:"xlsx"},
+  {cat:"pccc",item:"Bình chữa cháy bột MFZ4",spec:"TQ/VN",unit:"bình",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ/VN",price:380000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Bình chữa cháy khí MT3",spec:"TQ/VN",unit:"bình",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ/VN",price:580000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Nội quy tiêu lệnh PCCC",spec:"TQ/VN",unit:"bộ",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ/VN",price:80000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 3)",source:"xlsx"},
+  {cat:"pccc",item:"Bộ dụng cụ phá dỡ + mặt nạ",spec:"TQ/VN",unit:"bộ",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ/VN",price:2200000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (SL 1)",source:"xlsx"},
+  {cat:"pccc",item:"Vật tư phụ PCCC",spec:"Băng keo, ốc vít...",unit:"lô",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"TQ/VN",price:6349000,install:false,delivery:true,vat:false,warranty:24,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000",source:"xlsx"},
+  {cat:"pccc",item:"Hồ sơ PCCC & nghiệm thu",spec:"Lập hồ sơ + phương án chữa cháy + huấn luyện + cấp phép",unit:"hệ thống",qty:1,supplier:"Hùng Hải Phát (PCCC)",model:"",price:5000000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá Hùng Hải Phát (xlsx); đơn giá KHÔNG gồm VAT; đã gồm vận chuyển tới công trình; BH bảo trì 2 năm; tổng 68.519.000 (đã trừ 5.000.000 giảm giá)",source:"xlsx"},
+  {cat:"pccc",item:"Đầu báo khói",spec:"+ Tem",unit:"cái",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:230000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 15)",source:"photo"},
+  {cat:"pccc",item:"Trung tâm báo cháy",spec:"4 kênh",unit:"cái",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:4250000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Đèn báo phòng",spec:"+ Tem",unit:"cái",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:110000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 6)",source:"photo"},
+  {cat:"pccc",item:"Chuông/đèn/nút nhấn khẩn cấp",spec:"Còi - đèn - nút nhấn + Tem",unit:"bộ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:630000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 3)",source:"photo"},
+  {cat:"pccc",item:"Bình chữa cháy bột MFZ4",spec:"+ Tem",unit:"bình",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:370000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 3)",source:"photo"},
+  {cat:"pccc",item:"Bình chữa cháy khí MT3",spec:"+ Tem",unit:"bình",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:530000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 3)",source:"photo"},
+  {cat:"pccc",item:"Đèn exit",spec:"+ Tem",unit:"cái",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:250000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 4)",source:"photo"},
+  {cat:"pccc",item:"Đèn chiếu sáng sự cố",spec:"+ Tem",unit:"cái",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:270000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 4)",source:"photo"},
+  {cat:"pccc",item:"Kệ đỏ để bình chữa cháy",spec:"",unit:"bộ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:90000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 3)",source:"photo"},
+  {cat:"pccc",item:"Tủ dụng cụ phá dỡ",spec:"",unit:"tủ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:2540000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Nội quy tiêu lệnh PCCC",spec:"",unit:"bộ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:60000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Dây tín hiệu chống cháy",spec:"2*0.75",unit:"mét",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:17000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 250)",source:"photo"},
+  {cat:"pccc",item:"Dây điện nguồn",spec:"",unit:"mét",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:10000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 50)",source:"photo"},
+  {cat:"pccc",item:"Ruột gà",spec:"D20",unit:"cuộn",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:220000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng (SL 3)",source:"photo"},
+  {cat:"pccc",item:"Vật tư phụ PCCC",spec:"Gói vật tư phụ",unit:"gói",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:500000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Nhân công lắp đặt PCCC",spec:"Đi dây, lắp đặt, cài đặt hệ thống",unit:"hệ thống",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:10000000,install:true,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Hồ sơ thiết kế PCCC",spec:"",unit:"bộ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:5000000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"pccc",item:"Phương án PCCC & CHCN + nghiệm thu",spec:"",unit:"bộ",qty:1,supplier:"KD Lài (Hienvision)",model:"",price:25000000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá PCCC KD Lài (ảnh) 10/9/2026; Ms Châu, Phan Châu Trinh; tổng 63.810.000; nhân công tính riêng",source:"photo"},
+  {cat:"dien",item:"Đi ống đồng máy lạnh",spec:"Ống đồng Thái Lan 8 zem + Ố6/Ố10 + gen M-FLEX 6x13+10x13 + dây Cadivi 3x2.5 + cùm ống + ty treo (gồm cạy cắt đường)",unit:"mét",qty:1,supplier:"Điện Lạnh Lê Thông",model:"",price:370000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá ống đồng (ảnh, A. Lâm); ống đồng Thái Lan",source:"photo"},
+  {cat:"dien",item:"Ống đồng máy lạnh",spec:"Ống đồng Thái Lan 7 zem",unit:"mét",qty:1,supplier:"Điện Lạnh Lê Thông",model:"",price:350000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá ống đồng (ảnh, A. Lâm); ống đồng Thái Lan",source:"photo"},
+];
+
+/* ---------------- state ---------------- */
+var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{},
+          f:{cat:'',sup:'',item:'',q:'',pmin:'',pmax:'',install:false,delivery:false,vat:false,multi:false,onlyimp:false,sort:'cat'} };
+
+function L(){ return S.lang; }
+function catName(k){ var c=CATS.filter(function(x){return x.k===k;})[0]; return c?c[L()]:k; }
+function catOrder(k){ for(var i=0;i<CATS.length;i++) if(CATS[i].k===k) return i; return 99; }
+function itemKey(o){ return o.cat+'||'+(o.item||'').trim().toLowerCase(); }
+
+function load(){
+  try{
+    var raw=localStorage.getItem('veday_quotes'); if(raw){ S.offers=JSON.parse(raw); }
+    var ch=localStorage.getItem('veday_chosen'); if(ch) S.chosen=JSON.parse(ch);
+    var qt=localStorage.getItem('veday_qty'); if(qt) S.qty=JSON.parse(qt);
+    var rt=localStorage.getItem('veday_rate'); if(rt) S.rate=JSON.parse(rt);
+    var im=localStorage.getItem('veday_imp'); if(im) S.imp=JSON.parse(im);
+    var lg=localStorage.getItem('veday_lang'); if(lg) S.lang=lg;
+  }catch(e){}
+  if(!localStorage.getItem('veday_init_v2')){
+    S.offers = INGESTED.map(mk); localStorage.setItem('veday_init_v2','1'); save();
+  }
+}
+function save(){
+  localStorage.setItem('veday_quotes', JSON.stringify(S.offers));
+  localStorage.setItem('veday_chosen', JSON.stringify(S.chosen));
+  localStorage.setItem('veday_qty', JSON.stringify(S.qty));
+  localStorage.setItem('veday_rate', JSON.stringify(S.rate));
+  localStorage.setItem('veday_imp', JSON.stringify(S.imp));
+  localStorage.setItem('veday_lang', S.lang);
+}
+function uid(){ return 'o'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function mk(o){ o=Object.assign({},o); if(!o.id) o.id=uid(); o.price=+o.price||0; o.qty=(o.qty===''||o.qty==null)?1:+o.qty; o.warranty=+o.warranty||0; return o; }
+
+/* ---------------- helpers ---------------- */
+function money(n){ return Math.round(n).toLocaleString('vi-VN')+' ₫'; }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];}); }
+function jsstr(s){ return "'"+String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'"; }
+function attr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function offerById(id){ return S.offers.filter(function(x){return x.id===id;})[0]; }
+function qtyOf(o){ var k=itemKey(o); return (S.qty[k]!=null)?+S.qty[k]:(o.qty||1); }
+function tot(o){ return (o.price||0)*qtyOf(o); }
+function bestOf(list){ var b=null; list.forEach(function(o){ if(b===null||tot(o)<tot(b)) b=o; }); return b; }
+function setQty(key,v){ v=parseFloat(v)||0; if(v<=0) delete S.qty[key]; else S.qty[key]=v; save(); render(); }
+function bindQtyInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-key]'), function(inp){ inp.addEventListener('change', function(){ setQty(inp.getAttribute('data-key'), inp.value); }); }); }
+function chgPct(o,best){ if(!best||!tot(best)) return 0; return Math.round((tot(o)/tot(best)-1)*100); }
+function researchUrl(o){ var q=((o.model||'')+' '+(o.item||'')).trim()||(o.item||''); return 'https://www.google.com/search?q='+encodeURIComponent(q); }
+function youtubeUrl(o){ var q=((o.model||'')+' '+(o.item||'')).trim()||(o.item||''); return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
+function starsHTML(id){ var n=S.rate[id]||0, h='<span class="stars">'; for(var i=1;i<=5;i++){ h+='<span class="st'+(i<=n?' on':'')+'" onclick="setRating('+attr(jsstr(id))+','+i+')">'+(i<=n?'\u2605':'\u2606')+'</span>'; } return h+'</span>'; }
+function setRating(id,n){ if(S.rate[id]===n) delete S.rate[id]; else S.rate[id]=n; save(); render(); }
+function toggleImp(key){ if(S.imp[key]) delete S.imp[key]; else S.imp[key]=true; save(); render(); }
+function renameItem(key){
+  var o=S.offers.filter(function(x){return itemKey(x)===key;})[0]; if(!o) return;
+  var nv=prompt(S.lang==='vi'?'\u0110\u1ed5i t\u00ean h\u1ea1ng m\u1ee5c (\u0111\u1eb7t c\u00f9ng t\u00ean \u0111\u1ec3 G\u1ed8P c\u00e1c b\u00e1o gi\u00e1 c\u00f9ng lo\u1ea1i l\u1ea1i):':'Rename item (use the same name to MERGE quotes of the same kind):', o.item);
+  if(nv==null) return; nv=nv.trim(); if(!nv) return;
+  var nk=o.cat+'||'+nv.toLowerCase();
+  S.offers.forEach(function(x){ if(itemKey(x)===key) x.item=nv; });
+  if(S.qty[key]!=null){ S.qty[nk]=S.qty[key]; delete S.qty[key]; }
+  if(S.imp[key]){ S.imp[nk]=true; delete S.imp[key]; }
+  if(S.chosen[key]){ S.chosen[nk]=S.chosen[key]; delete S.chosen[key]; }
+  save(); render();
+}
+
+/* ---------------- filtering ---------------- */
+function filtered(){
+  var f=S.f, q=f.q.trim().toLowerCase();
+  return S.offers.filter(function(o){
+    if(f.cat && o.cat!==f.cat) return false;
+    if(f.sup && o.supplier!==f.sup) return false;
+    if(f.item && o.item!==f.item) return false;
+    if(f.install && !o.install) return false;
+    if(f.delivery && !o.delivery) return false;
+    if(f.vat && !o.vat) return false;
+    if(f.pmin!=='' && o.price < +f.pmin) return false;
+    if(f.pmax!=='' && o.price > +f.pmax) return false;
+    if(f.onlyimp && !S.imp[itemKey(o)]) return false;
+    if(q){ var hay=((o.item||'')+' '+(o.supplier||'')+' '+(o.model||'')+' '+(o.spec||'')).toLowerCase(); if(hay.indexOf(q)<0) return false; }
+    return true;
+  });
+}
+function groupOffers(list){
+  var g={};
+  list.forEach(function(o){ var k=itemKey(o); (g[k]=g[k]||[]).push(o); });
+  var arr=Object.keys(g).map(function(k){ return {key:k, offers:g[k]}; });
+  var sort=S.f.sort;
+  arr.sort(function(a,b){
+    var A=a.offers[0], B=b.offers[0];
+    if(sort==='cat'){ var d=catOrder(A.cat)-catOrder(B.cat); if(d) return d; return (A.item||'').localeCompare(B.item||''); }
+    if(sort==='price'){ return bestOf(a.offers).price - bestOf(b.offers).price; }
+    if(sort==='save'){ return grpSave(b)-grpSave(a); }
+    if(sort==='imp'){ var ia=S.imp[a.key]?0:1, ib=S.imp[b.key]?0:1; if(ia!==ib) return ia-ib; var d2=catOrder(A.cat)-catOrder(B.cat); if(d2) return d2; return (A.item||'').localeCompare(B.item||''); }
+    return 0;
+  });
+  return arr;
+}
+function grpSave(g){ var ts=g.map(tot); return Math.max.apply(null,ts)-Math.min.apply(null,ts); }
+function allGroupKeys(){ var g={}; S.offers.forEach(function(o){ g[itemKey(o)]=1; }); return Object.keys(g); }
+
+/* ---------------- dynamic controls ---------------- */
+function fillSelects(){
+  var catSel=document.getElementById('fcat'), eCat=document.getElementById('e_cat');
+  var opts='<option value="">'+ (L()==='vi'?'— Tất cả hạng mục —':'— All categories —') +'</option>';
+  CATS.forEach(function(c){ opts+='<option value="'+c.k+'">'+esc(c[L()])+'</option>'; });
+  catSel.innerHTML=opts; catSel.value=S.f.cat;
+  var eopts=''; CATS.forEach(function(c){ eopts+='<option value="'+c.k+'">'+esc(c[L()])+'</option>'; });
+  eCat.innerHTML=eopts;
+
+  var supSel=document.getElementById('fsup');
+  var sups=[]; S.offers.forEach(function(o){ if(o.supplier && sups.indexOf(o.supplier)<0) sups.push(o.supplier); });
+  sups.sort();
+  var so='<option value="">'+ (L()==='vi'?'— Tất cả NCC —':'— All suppliers —') +'</option>';
+  sups.forEach(function(s){ so+='<option value="'+esc(s)+'">'+esc(s)+'</option>'; });
+  supSel.innerHTML=so; supSel.value=S.f.sup;
+
+  var itemSel=document.getElementById('fitem');
+  var items=[]; S.offers.forEach(function(o){ if(o.item && items.indexOf(o.item)<0) items.push(o.item); });
+  items.sort(function(a,b){ return a.localeCompare(b); });
+  var io='<option value="">'+ (L()==='vi'?'— Tất cả món —':'— All items —') +'</option>';
+  items.forEach(function(it){ io+='<option value="'+esc(it)+'">'+esc(it)+'</option>'; });
+  itemSel.innerHTML=io; itemSel.value=S.f.item;
+
+  var itemDl=document.getElementById('itemList'), allItems=[];
+  Object.keys(ITEMS).forEach(function(k){ ITEMS[k].forEach(function(it){ allItems.push(it); }); });
+  S.offers.forEach(function(o){ if(o.item && allItems.indexOf(o.item)<0) allItems.push(o.item); });
+  itemDl.innerHTML=allItems.sort().map(function(i){ return '<option value="'+esc(i)+'">'; }).join('');
+  document.getElementById('supList').innerHTML=sups.map(function(s){ return '<option value="'+esc(s)+'">'; }).join('');
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  document.documentElement.lang=L();
+  document.getElementById('langBtn').textContent = (L()==='vi')?'EN':'VI';
+  document.title = L()==='vi' ? 'So sánh báo giá thiết bị – Veday Home' : 'Equipment Price Comparison – Veday Home';
+  document.querySelectorAll('[data-vi]').forEach(function(el){
+    if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){ el.placeholder=el.getAttribute('data-'+L()); }
+    else { el.innerHTML=el.getAttribute('data-'+L()); }
+  });
+  var q=document.getElementById('q'); if(q){ q.placeholder=q.getAttribute('data-ph-'+L()); }
+  fillSelects();
+  document.querySelectorAll('#viewSeg button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-view')===S.view); });
+  renderKPIs();
+  if(S.view==='cmp') renderCompare(); else renderTable();
+  renderPlan();
+  renderSuppliers();
+  save();
+}
+
+function renderKPIs(){
+  var items={}, sups={};
+  S.offers.forEach(function(o){ items[itemKey(o)]=1; sups[o.supplier]=1; });
+  var nItems=Object.keys(items).length, nSup=Object.keys(sups).length;
+  var groups=groupOffers(S.offers), cheap=0, max=0;
+  groups.forEach(function(g){ var ts=g.offers.map(tot); cheap+=Math.min.apply(null,ts); max+=Math.max.apply(null,ts); });
+  var save_=max-cheap;
+  var chosenTotal=0, chosenN=0;
+  Object.keys(S.chosen).forEach(function(k){ var o=offerById(S.chosen[k]); if(o){ chosenTotal+=tot(o); chosenN++; } });
+  var k=function(label,val,note,cls){
+    return '<div class="card '+(cls||'')+'"><div class="label">'+label+'</div><div class="value">'+val+'</div>'+(note?'<div class="note">'+note+'</div>':'')+'</div>';
+  };
+  var vi=L()==='vi';
+  document.getElementById('kpis').innerHTML =
+    k(vi?'Hạng mục':'Items', nItems, vi?'đang hỏi giá':'being quoted') +
+    k(vi?'Nhà cung cấp':'Suppliers', nSup, vi?'đã gửi báo giá':'sent quotes') +
+    k(vi?'Báo giá đã nhập':'Quotes entered', S.offers.length, vi?'dòng dữ liệu':'rows') +
+    k(vi?'Phương án rẻ nhất':'Cheapest plan', money(cheap), vi?'nếu chọn giá thấp nhất từng món':'if cheapest picked per item','best') +
+    k(vi?'Tiết kiệm tối đa':'Max saving', money(save_), vi?'so với chọn giá cao nhất':'vs most expensive per item','save') +
+    k(vi?'Đã chốt mua':'Picked to buy', money(chosenTotal), chosenN+'/'+nItems+' '+ (vi?'hạng mục':'items picked'));
+}
+
+function chipsHTML(o){
+  function c(yes,vi,en){ return '<span class="inc '+(yes?'yes':'no')+'">'+ (yes?'✓ ':'✕ ') + (L()==='vi'?vi:en) +'</span>'; }
+  var h='';
+  h+=c(o.install,'Lắp đặt','Install');
+  h+=c(o.delivery,'Vận chuyển','Delivery');
+  h+=c(o.vat,'VAT','VAT');
+  if(o.warranty>0) h+='<span class="inc w">🛡 '+o.warranty+' '+ (L()==='vi'?'th':'mo') +'</span>';
+  return h;
+}
+
+function renderCompare(){
+  var groups=groupOffers(filtered());
+  if(S.f.multi) groups=groups.filter(function(g){ return g.offers.length>=2; });
+  var el=document.getElementById('view'); var vi=L()==='vi';
+  if(!groups.length){ el.innerHTML='<div class="panel empty">'+(vi?'Không có báo giá nào khớp bộ lọc. Đổi bộ lọc hoặc bấm “Nạp lại dữ liệu báo giá”.':'No quotes match the filter. Change filters or click “Reload quotes”.')+'</div>'; return; }
+  var html='';
+  groups.forEach(function(g){
+    var list=g.offers.slice().sort(function(a,b){ return tot(a)-tot(b); });
+    var best=bestOf(list);
+    var ts=list.map(tot), lo=Math.min.apply(null,ts), hi=Math.max.apply(null,ts);
+    var o0=list[0];
+    html+='<div class="cmp">';
+    html+='<div class="cmp-head"><span class="chip cat">'+esc(catName(o0.cat))+'</span>'
+        + '<span class="name">'+esc(o0.item)+'</span>'
+        + '<button class="ibtn noprint'+(S.imp[g.key]?' on':'')+'" onclick="toggleImp('+attr(jsstr(g.key))+')" title="'+(vi?'Đánh dấu món quan trọng':'Mark item important')+'">'+(S.imp[g.key]?'⭐':'☆')+'</button>'
+        + '<button class="ibtn noprint" onclick="renameItem('+attr(jsstr(g.key))+')" title="'+(vi?'Đổi tên / gộp món':'Rename / merge item')+'">✎</button>'
+        + (o0.spec?'<span class="spec">'+esc(o0.spec)+'</span>':'')
+        + '<span class="spec">· '+ (vi?'SL cần mua':'Qty needed') +' <input class="qin" type="number" min="1" step="1" value="'+qtyOf(o0)+'" data-key="'+esc(g.key)+'"></span>'
+        + (hi>lo ? '<span class="spread">'+ (vi?'chênh tối đa':'max spread') +' '+money(hi-lo)+'</span>' : '')
+        + '</div>';
+    html+='<div class="offers">';
+    list.forEach(function(o,idx){
+      var isBest=o.id===best.id, isChosen=S.chosen[g.key]===o.id;
+      html+='<div class="offer'+(isBest?' best':'')+(isChosen?' chosen':'')+'" data-best="'+ (vi?'RẺ NHẤT':'CHEAPEST') +'">';
+      html+='<div class="rank">#'+(idx+1)+'</div>';
+      html+='<div class="ncc">'+esc(o.supplier)+'</div>';
+      html+='<div class="model">'+esc(o.model||'—')+'</div>';
+      html+='<div class="price">'+money(o.price)+'</div>';
+      if(qtyOf(o)>1) html+='<div class="total">'+(vi?'Thành tiền':'Total')+': <b>'+money(tot(o))+'</b> <span class="mini">('+qtyOf(o)+' × '+money(o.price)+')</span></div>';
+      if(!isBest) html+='<div class="save">'+ (vi?'đắt hơn ':'+') + money(tot(o)-tot(best)) +' <span class="chg">(+'+chgPct(o,best)+'%)</span></div>';
+      html+='<div class="chips">'+chipsHTML(o)+'</div>';
+      if(o.warranty>0) html+='<div class="mini">≈ '+money(o.price*12/o.warranty)+'/'+ (vi?'năm bảo hành':'yr warranty') +'</div>';
+      html+='<div class="starsrow noprint">'+starsHTML(o.id)+'</div>';
+      html+='<div class="links noprint"><a class="lbtn" target="_blank" rel="noopener" href="'+attr(researchUrl(o))+'">🔎 '+(vi?'Tìm hiểu':'Research')+'</a><a class="lbtn" target="_blank" rel="noopener" href="'+attr(youtubeUrl(o))+'">▶ YouTube</a></div>';
+      if(o.note) html+='<div class="note">'+esc(o.note)+'</div>';
+      html+='<div class="acts">';
+      html+='<button class="btn tiny '+(isChosen?'':'ghost')+'" onclick="pick('+attr(jsstr(g.key))+','+attr(jsstr(o.id))+')">'+ (isChosen?(vi?'✔ Đã chọn':'✔ Picked'):(vi?'Chọn mua':'Pick')) +'</button>';
+      html+='<button class="btn tiny ghost noprint" onclick="editOffer('+attr(jsstr(o.id))+')">✎</button>';
+      html+='<button class="btn tiny ghost noprint" onclick="delOffer('+attr(jsstr(o.id))+')">🗑</button>';
+      html+='</div></div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html; bindQtyInputs(el);
+}
+
+function renderTable(){
+  var list=filtered();
+  if(S.f.multi){ var cnt={}; list.forEach(function(o){ cnt[itemKey(o)]=(cnt[itemKey(o)]||0)+1; }); list=list.filter(function(o){ return cnt[itemKey(o)]>=2; }); }
+  list=list.slice().sort(function(a,b){
+    if(S.f.sort==='price') return a.price-b.price;
+    var d=catOrder(a.cat)-catOrder(b.cat); if(d) return d; return (a.item||'').localeCompare(b.item||'');
+  });
+  var el=document.getElementById('view'); var vi=L()==='vi';
+  if(!list.length){ el.innerHTML='<div class="panel empty">'+(vi?'Không có báo giá nào khớp bộ lọc.':'No quotes match the filter.')+'</div>'; return; }
+  var grp=groupOffers(S.offers), bestId={}, bestOfferMap={};
+  grp.forEach(function(g){ var b=bestOf(g.offers); bestId[g.key]=b.id; bestOfferMap[g.key]=b; });
+  var h='<div class="panel"><div class="tblwrap"><table><thead><tr>'
+    + '<th>'+ (vi?'Hạng mục':'Category') +'</th><th>'+ (vi?'Tên hạng mục':'Item') +'</th>'
+    + '<th>'+ (vi?'Quy cách':'Spec') +'</th><th>'+ (vi?'ĐVT':'Unit') +'</th>'
+    + '<th class="num">'+ (vi?'SL':'Qty') +'</th><th>'+ (vi?'Nhà cung cấp':'Supplier') +'</th>'
+    + '<th>'+ (vi?'Model':'Model') +'</th><th class="num">'+ (vi?'Đơn giá':'Unit price') +'</th>'
+    + '<th class="num">'+ (vi?'Thành tiền':'Total') +'</th><th>'+ (vi?'Bao gồm':'Includes') +'</th>'
+    + '<th class="num">'+ (vi?'Chênh':'Δ%') +'</th>'
+    + '<th class="c">'+ (vi?'Đánh giá':'Rating') +'</th>'
+    + '<th class="c">'+ (vi?'Nguồn':'Source') +'</th><th class="noprint">'+ (vi?'Thao tác':'Actions') +'</th></tr></thead><tbody>';
+  list.forEach(function(o){
+    var incl=[]; if(o.install)incl.push(vi?'Lắp đặt':'Install'); if(o.delivery)incl.push(vi?'Vận chuyển':'Delivery'); if(o.vat)incl.push('VAT');
+    if(o.warranty>0) incl.push((vi?'BH ':'Wty ')+o.warranty+'m');
+    var isBest=bestId[itemKey(o)]===o.id;
+    h+='<tr>'
+     + '<td>'+esc(catName(o.cat))+'</td>'
+     + '<td><b>'+esc(o.item)+'</b>'+(S.chosen[itemKey(o)]===o.id?' <span class="tag">✓ '+(vi?'đã chọn':'picked')+'</span>':'')+'</td>'
+     + '<td>'+esc(o.spec||'')+'</td><td>'+esc(o.unit||'')+'</td>'
+     + '<td class="num"><input class="qin" type="number" min="1" value="'+qtyOf(o)+'" data-key="'+esc(itemKey(o))+'"></td>'
+     + '<td>'+esc(o.supplier)+'</td><td>'+esc(o.model||'')+'</td>'
+     + '<td class="num'+(isBest?' b1win':'')+'">'+money(o.price)+'</td>'
+     + '<td class="num">'+money(tot(o))+'</td>'
+     + '<td class="num">'+(isBest?'—':'<span class="chg">+'+chgPct(o,bestOfferMap[itemKey(o)])+'%</span>')+'</td>'
+     + '<td>'+incl.join(', ')+'</td>'
+     + '<td class="c">'+starsHTML(o.id)+'</td>'
+     + '<td class="c">'+esc(o.source||'')+'</td>'
+     + '<td class="noprint c"><a class="lbtn" target="_blank" rel="noopener" href="'+attr(researchUrl(o))+'">🔎</a> <button class="btn tiny ghost" onclick="editOffer('+attr(jsstr(o.id))+')">✎</button> <button class="btn tiny ghost" onclick="delOffer('+attr(jsstr(o.id))+')">🗑</button></td>'
+     + '</tr>';
+  });
+  h+='</tbody></table></div></div>';
+  el.innerHTML=h; bindQtyInputs(el);
+}
+
+/* ---------------- purchase plan ---------------- */
+function chosenList(){
+  return Object.keys(S.chosen).map(function(k){ var o=offerById(S.chosen[k]); return o?{key:k,o:o}:null; }).filter(Boolean);
+}
+function sumLines(lines){ return lines.reduce(function(a,x){ return a+tot(x.o); },0); }
+function renderPlan(){
+  var el=document.getElementById('plan'); var vi=L()==='vi';
+  var chosen=chosenList();
+  if(!chosen.length){
+    el.innerHTML='<div class="empty">'+ (vi?'Chưa chọn món nào. Sang tab <b>So sánh</b>, bấm <b>Chọn mua</b> ở món muốn mua để đưa vào đây.':'Nothing picked yet. Go to the <b>Compare</b> tab and click <b>Pick</b> on the items you want.') +'</div>';
+    return;
+  }
+  var bySup={};
+  chosen.forEach(function(x){ (bySup[x.o.supplier]=bySup[x.o.supplier]||[]).push(x); });
+  var sups=Object.keys(bySup);
+  sups.sort(function(a,b){ return sumLines(bySup[b])-sumLines(bySup[a]); });
+  var grand=0, html='';
+  html+='<div class="noprint" style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<button class="btn ghost" onclick="exportPlan()">'+(vi?'💾 Xuất kế hoạch (CSV)':'💾 Export plan (CSV)')+'</button>'
+      + '</div>';
+  sups.forEach(function(s){
+    var lines=bySup[s].slice().sort(function(a,b){ return catOrder(a.o.cat)-catOrder(b.o.cat); });
+    var sub=sumLines(lines); grand+=sub;
+    html+='<div class="plan-sup"><h3>🏬 '+esc(s)+' <span class="sub2">'+lines.length+' '+ (vi?'món':'items') +' · '+money(sub)+'</span>'
+        + '<button class="btn tiny ghost noprint" style="margin-left:auto" onclick="copySupplier('+attr(jsstr(s))+')">'+(vi?'📋 Copy tin nhắn':'📋 Copy message')+'</button></h3>';
+    html+='<div class="tblwrap"><table><thead><tr>'
+        + '<th>'+ (vi?'Hạng mục':'Item') +'</th><th>'+ (vi?'Model / quy cách':'Model / spec') +'</th>'
+        + '<th>'+ (vi?'ĐVT':'Unit') +'</th><th class="num">'+ (vi?'SL':'Qty') +'</th>'
+        + '<th class="num">'+ (vi?'Đơn giá':'Unit price') +'</th><th class="num">'+ (vi?'Thành tiền':'Total') +'</th>'
+        + '<th>'+ (vi?'Bao gồm':'Includes') +'</th><th class="noprint"></th></tr></thead><tbody>';
+    lines.forEach(function(x){
+      var o=x.o; var incl=[]; if(o.install)incl.push(vi?'Lắp đặt':'Install'); if(o.delivery)incl.push(vi?'Vận chuyển':'Delivery'); if(o.vat)incl.push('VAT'); if(o.warranty>0) incl.push((vi?'BH ':'Wty ')+o.warranty+'m');
+      html+='<tr><td><b>'+esc(o.item)+'</b> <a class="lbtn noprint" target="_blank" rel="noopener" href="'+attr(researchUrl(o))+'">🔎</a>'+(o.model?'<div class="mini">'+esc(o.model)+'</div>':'')+'</td>'
+        +'<td class="mini">'+esc(o.spec||'')+'</td><td>'+esc(o.unit||'')+'</td>'
+        +'<td class="num"><input class="qin" type="number" min="1" value="'+qtyOf(o)+'" data-key="'+esc(x.key)+'"></td>'
+        +'<td class="num">'+money(o.price)+'</td><td class="num"><b>'+money(tot(o))+'</b></td>'
+        +'<td class="mini">'+incl.join(', ')+'</td>'
+        +'<td class="noprint c"><button class="btn tiny ghost" onclick="pick('+attr(jsstr(x.key))+','+attr(jsstr(o.id))+')" title="'+(vi?'Bỏ chọn':'Unpick')+'">✖</button></td></tr>';
+    });
+    html+='<tr><td colspan="5" class="plan-total">'+ (vi?'Cộng':'Subtotal') +'</td><td class="num plan-total">'+money(sub)+'</td><td colspan="2"></td></tr>';
+    html+='</tbody></table></div></div>';
+  });
+  html+='<div class="plan-sup" style="border-color:var(--green);background:#f2f7f4;"><h3 style="margin:0;">'+ (vi?'TỔNG CỘNG ('+chosen.length+' món)':'GRAND TOTAL ('+chosen.length+' items)') +'<span class="sub2" style="margin-left:auto;font-size:16px;color:var(--green);font-weight:800;">'+money(grand)+'</span></h3></div>';
+  var remaining=allGroupKeys().length-chosen.length;
+  if(remaining>0) html+='<p class="legend">'+ (vi?'Còn '+remaining+' hạng mục chưa chọn.':'Still '+remaining+' items not picked.') +'</p>';
+  el.innerHTML=html; bindQtyInputs(el);
+}
+function copySupplier(s){
+  var lines=S.offers.filter(function(o){ return S.chosen[itemKey(o)]===o.id && o.supplier===s; });
+  lines.sort(function(a,b){ return catOrder(a.cat)-catOrder(b.cat); });
+  var vi=L()==='vi'; var out=[];
+  out.push((vi?'Kính gửi ':'Dear ')+s+',');
+  out.push(vi?'Em muốn đặt mua:':'I would like to order:');
+  lines.forEach(function(o,i){ out.push((i+1)+'. '+o.item+(o.model?' ('+o.model+')':'')+' – SL '+qtyOf(o)+' '+ (o.unit||'') +' – '+money(o.price)+'/'+(o.unit||'')+' = '+money(tot(o))); });
+  out.push((vi?'Tổng cộng: ':'Total: ')+money(sumLines(lines.map(function(o){return {o:o};}))));
+  var txt=out.join('\n');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ alert(vi?'Đã copy tin nhắn cho '+s:'Copied message for '+s); }, function(){ prompt(vi?'Copy nội dung:':'Copy text:', txt); });
+  } else { prompt(vi?'Copy nội dung:':'Copy text:', txt); }
+}
+
+function renderSuppliers(){
+  var bySup={};
+  S.offers.forEach(function(o){ var s=bySup[o.supplier]=bySup[o.supplier]||{n:0,sum:0,wins:0,chosen:0}; s.n++; s.sum+=tot(o); });
+  groupOffers(S.offers).forEach(function(g){ var b=bestOf(g.offers); if(bySup[b.supplier]) bySup[b.supplier].wins++; });
+  chosenList().forEach(function(x){ if(bySup[x.o.supplier]) bySup[x.o.supplier].chosen+=tot(x.o); });
+  var rows=Object.keys(bySup).map(function(s){ return {s:s, d:bySup[s]}; }).sort(function(a,b){ return b.d.sum-a.d.sum; });
+  var vi=L()==='vi';
+  if(!rows.length){ document.getElementById('supplierSummary').innerHTML='<div class="empty">'+ (vi?'Chưa có dữ liệu.':'No data yet.') +'</div>'; return; }
+  var total=rows.reduce(function(a,r){ return a+r.d.sum; },0);
+  var h='<div class="tblwrap"><table class="sumtable"><thead><tr>'
+    + '<th>'+ (vi?'Nhà cung cấp':'Supplier') +'</th><th class="num">'+ (vi?'Số báo giá':'Quotes') +'</th>'
+    + '<th class="num">'+ (vi?'Tổng giá trị báo':'Total quoted') +'</th>'
+    + '<th class="num">'+ (vi?'Số món rẻ nhất':'# cheapest') +'</th>'
+    + '<th class="num">'+ (vi?'Giá trị đã chốt':'Chosen value') +'</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr><td><b>'+esc(r.s)+'</b></td><td class="num">'+r.d.n+'</td><td class="num">'+money(r.d.sum)+'</td>'
+     + '<td class="num'+(r.d.wins?' b1win':'')+'">'+r.d.wins+'</td><td class="num">'+(r.d.chosen?money(r.d.chosen):'—')+'</td></tr>';
+  });
+  h+='<tr><td><b>'+ (vi?'TỔNG':'TOTAL') +'</b></td><td class="num">'+S.offers.length+'</td><td class="num"><b>'+money(total)+'</b></td><td></td><td class="num">—</td></tr>';
+  h+='</tbody></table></div>';
+  h+='<p class="legend">'+ (vi?'“Số món rẻ nhất” = số hạng mục mà NCC này có giá thấp nhất. Tổng giá trị báo chỉ để tham khảo (mỗi NCC báo số món khác nhau).':'“# cheapest” = number of items where this supplier has the lowest price. Total quoted is indicative (suppliers quote different item sets).') +'</p>';
+  document.getElementById('supplierSummary').innerHTML=h;
+}
+
+/* ---------------- actions ---------------- */
+function pick(key,id){ if(S.chosen[key]===id) delete S.chosen[key]; else S.chosen[key]=id; save(); render(); }
+function delOffer(id){ if(!confirm(L()==='vi'?'Xóa báo giá này?':'Delete this quote?')) return; S.offers=S.offers.filter(function(o){return o.id!==id;}); Object.keys(S.chosen).forEach(function(k){ if(S.chosen[k]===id) delete S.chosen[k]; }); save(); render(); }
+function editOffer(id){
+  var o=offerById(id); if(!o) return;
+  var box=document.getElementById('entryBox'); box.open=true;
+  document.getElementById('e_id').value=o.id; document.getElementById('e_cat').value=o.cat;
+  document.getElementById('e_item').value=o.item||''; document.getElementById('e_spec').value=o.spec||'';
+  document.getElementById('e_unit').value=o.unit||''; document.getElementById('e_qty').value=o.qty;
+  document.getElementById('e_supplier').value=o.supplier||''; document.getElementById('e_model').value=o.model||'';
+  document.getElementById('e_price').value=o.price; document.getElementById('e_warranty').value=o.warranty||0;
+  document.getElementById('e_source').value=o.source||'manual';
+  document.getElementById('e_install').checked=!!o.install; document.getElementById('e_delivery').checked=!!o.delivery;
+  document.getElementById('e_vat').checked=!!o.vat; document.getElementById('e_note').value=o.note||'';
+  document.getElementById('formHint').textContent = L()==='vi'?'Đang sửa — bấm Lưu để cập nhật.':'Editing — click Save to update.';
+  box.scrollIntoView({behavior:'smooth'});
+}
+function resetForm(){
+  document.getElementById('entryForm').reset();
+  document.getElementById('e_id').value=''; document.getElementById('e_qty').value=1;
+  document.getElementById('e_warranty').value=0; document.getElementById('formHint').textContent='';
+}
+function saveOffer(e){
+  e.preventDefault();
+  var id=document.getElementById('e_id').value;
+  var o={
+    cat:document.getElementById('e_cat').value, item:document.getElementById('e_item').value.trim(),
+    spec:document.getElementById('e_spec').value.trim(), unit:document.getElementById('e_unit').value.trim(),
+    qty:document.getElementById('e_qty').value, supplier:document.getElementById('e_supplier').value.trim(),
+    model:document.getElementById('e_model').value.trim(), price:document.getElementById('e_price').value,
+    warranty:document.getElementById('e_warranty').value, source:document.getElementById('e_source').value,
+    install:document.getElementById('e_install').checked, delivery:document.getElementById('e_delivery').checked,
+    vat:document.getElementById('e_vat').checked, note:document.getElementById('e_note').value.trim()
+  };
+  if(id){ o.id=id; S.offers=S.offers.map(function(x){ return x.id===id?Object.assign(x,o):x; }); }
+  else { S.offers.push(mk(o)); }
+  resetForm(); save(); render(); return false;
+}
+
+/* ---------------- ingested quotes ---------------- */
+function loadIngested(){
+  INGESTED.forEach(function(s){ if(!S.offers.some(function(o){return o.item===s.item&&o.supplier===s.supplier&&o.price===s.price;})) S.offers.push(mk(s)); });
+  save(); render();
+}
+function clearAll(){
+  if(!confirm(S.lang==='vi'?'XÓA TẤT CẢ báo giá? Không hoàn tác được.':'Delete ALL quotes? This cannot be undone.')) return;
+  S.offers=[]; S.chosen={}; S.qty={}; save(); render();
+}
+
+/* ---------------- CSV ---------------- */
+var CSV_HEADERS=['cat','item','spec','unit','qty','supplier','model','price','install','delivery','vat','warranty','note','source'];
+function csvCell(v){ v=(v==null?'':String(v)); return /[",\n;]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }
+function dl(name,text){ var blob=new Blob([text],{type:'text/csv;charset=utf-8'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); }
+function exportCSV(){
+  var lines=[CSV_HEADERS.join(',')];
+  S.offers.forEach(function(o){ lines.push(CSV_HEADERS.map(function(h){ return csvCell(h==='install'||h==='delivery'||h==='vat'?(o[h]?'x':''):(h==='qty'?qtyOf(o):o[h])); }).join(',')); });
+  dl('veday-bao-gia-'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+lines.join('\n'));
+}
+function exportPlan(){
+  var rows=[['supplier','item','model','spec','unit','qty','unit_price','total','includes']];
+  var chosen=chosenList().map(function(x){ return x.o; });
+  chosen.sort(function(a,b){ return a.supplier.localeCompare(b.supplier)||catOrder(a.cat)-catOrder(b.cat); });
+  chosen.forEach(function(o){
+    var incl=[]; if(o.install)incl.push('lắp đặt'); if(o.delivery)incl.push('vận chuyển'); if(o.vat)incl.push('VAT'); if(o.warranty>0) incl.push('BH'+o.warranty+'th');
+    rows.push([o.supplier,o.item,o.model||'',o.spec||'',o.unit||'',qtyOf(o),o.price,tot(o),incl.join(', ')]);
+  });
+  dl('veday-ke-hoach-mua-'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.map(function(r){ return r.map(csvCell).join(','); }).join('\n'));
+}
+function parseCSV(text){
+  var rows=[], cur=[], val='', q=false;
+  text=text.replace(/\r\n/g,'\n').replace(/^\ufeff/,'');
+  for(var i=0;i<text.length;i++){
+    var ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){ val+='"'; i++; } else q=false; } else val+=ch; }
+    else { if(ch==='"') q=true; else if(ch===','||ch==='\n'){ cur.push(val); val=''; if(ch==='\n'){ rows.push(cur); cur=[]; } } else val+=ch; }
+  }
+  if(val!==''||cur.length){ cur.push(val); rows.push(cur); }
+  return rows;
+}
+function truthy(v){ v=String(v).trim().toLowerCase(); return v==='x'||v==='1'||v==='true'||v==='yes'||v==='có'||v==='co'||v==='v'; }
+function importCSV(input){
+  var f=input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    var rows=parseCSV(r.result), head=rows.shift().map(function(h){return h.trim().toLowerCase();});
+    var n=0;
+    rows.forEach(function(cells){
+      if(!cells.length || cells.join('').trim()==='') return;
+      var o={}; head.forEach(function(h,i){ o[h]=cells[i]; });
+      if(!o.item && !o.supplier) return;
+      o.install=truthy(o.install); o.delivery=truthy(o.delivery); o.vat=truthy(o.vat);
+      o.source=o.source||'import'; delete o.id;
+      S.offers.push(mk(o)); n++;
+    });
+    save(); render();
+    alert((L()==='vi'?'Đã nhập ':'Imported ')+n+(L()==='vi'?' dòng.':' rows.'));
+    input.value='';
+  };
+  r.readAsText(f);
+}
+
+/* ---------------- wire up ---------------- */
+document.getElementById('langBtn').onclick=function(){ S.lang=(L()==='vi')?'en':'vi'; save(); render(); };
+document.getElementById('viewSeg').addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; S.view=b.getAttribute('data-view'); save(); render(); });
+document.getElementById('q').addEventListener('input',function(e){ S.f.q=e.target.value; if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('fcat').addEventListener('change',function(e){ S.f.cat=e.target.value; save(); if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('fsup').addEventListener('change',function(e){ S.f.sup=e.target.value; save(); if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('fitem').addEventListener('change',function(e){ S.f.item=e.target.value; save(); if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('fMulti').addEventListener('change',function(e){ S.f.multi=e.target.checked; if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('fImp').addEventListener('change',function(e){ S.f.onlyimp=e.target.checked; if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('pmin').addEventListener('change',function(e){ S.f.pmin=e.target.value; if(S.view==='cmp') renderCompare(); else renderTable(); });
+document.getElementById('pmax').addEventListener('change',function(e){ S.f.pmax=e.target.value; if(S.view==='cmp') renderCompare(); else renderTable(); });
+['fInstall','fDelivery','fVat'].forEach(function(id){ document.getElementById(id).addEventListener('change',function(e){ S.f[id.slice(1).toLowerCase()]=e.target.checked; if(S.view==='cmp') renderCompare(); else renderTable(); }); });
+document.getElementById('fsort').addEventListener('change',function(e){ S.f.sort=e.target.value; if(S.view==='cmp') renderCompare(); else renderTable(); });
+
+load();
+render();
+
+</script>
+</body>
+</html>
