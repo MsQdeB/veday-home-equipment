@@ -123,6 +123,8 @@
   details[open] > summary.phead::before{ content:"▾"; }
   summary.phead:hover{ color:var(--green2); }
   .grouphdr td{ background:#e8f0ea; color:var(--green); font-weight:800; font-size:13px; }
+  tr.ordered td{ background:#e6f4ea; }
+  tr.ordered td:nth-child(3) b{ color:#5a6b63; }
   @media print{
     body{ padding:6mm; background:#fff; font-size:11.5px; }
     .noprint{ display:none !important; }
@@ -501,7 +503,7 @@ var NEED_SEED = [
 ];
 
 /* ---------------- state ---------------- */
-var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{}, need:[], rooms:6,
+var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{}, need:[], rooms:6, nfilter:'all',
           f:{cat:'',sup:'',item:'',q:'',pmin:'',pmax:'',install:false,delivery:false,vat:false,multi:false,onlyimp:false,sort:'cat'} };
 
 function L(){ return S.lang; }
@@ -803,41 +805,47 @@ function delNeed(i){ S.need.splice(i,1); save(); render(); }
 function clearNeed(){ if(!confirm(L()==='vi'?'Xóa hết danh mục cần mua?':'Clear the shopping list?')) return; S.need=[]; localStorage.setItem('veday_need_cleared','1'); save(); render(); }
 function setNeedQty(i,v){ var q=parseFloat(v)||1; S.need[i].qty=q; syncNeedQty(); save(); render(); }
 function setRooms(v){ S.rooms=Math.max(1, parseInt(v)||1); save(); render(); }
-function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); }
+function setOrdered(i,v){ S.need[i].ordered=!!v; save(); render(); }
+function setNfilter(v){ S.nfilter=v; render(); }
+function bindNeedFilter(root){ var s=root.querySelector('#needFilter'); if(s) s.addEventListener('change', function(){ setNfilter(s.value); }); }
+function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); Array.prototype.forEach.call(root.querySelectorAll('input[type=checkbox][data-order]'), function(cb){ cb.addEventListener('change', function(){ setOrdered(+cb.getAttribute('data-order'), cb.checked); }); }); }
 function viewNeed(i){ var x=S.need[i]; var m=needKeys(x); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
 function exportNeed(){
   var N=S.rooms||6;
-  var rows=[['group','name','desc','qty_per_room','total','flat','link','note']];
-  (S.need||[]).forEach(function(x){ rows.push([x.group||'',x.name,x.desc||'',x.qty,(x.flat?x.qty:x.qty*N),(x.flat?'x':''),x.link||'',x.note||'']); });
+  var rows=[['group','name','desc','qty_per_room','total','ordered','flat','link','note']];
+  (S.need||[]).forEach(function(x){ rows.push([x.group||'',x.name,x.desc||'',x.qty,(x.flat?x.qty:x.qty*N),(x.ordered?'x':''),(x.flat?'x':''),x.link||'',x.note||'']); });
   dl('veday-danh-muc-can-mua-'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.map(function(r){ return r.map(csvCell).join(','); }).join('\n'));
 }
 function renderNeed(){
   var el=document.getElementById('need'); var vi=L()==='vi';
-  var rows=S.need||[]; var N=S.rooms||6;
-  var matched=0; rows.forEach(function(x){ if(needKeys(x).length) matched++; });
+  var all=S.need||[]; var N=S.rooms||6;
+  var matched=0, orderedN=0; all.forEach(function(x){ if(needKeys(x).length) matched++; if(x.ordered) orderedN++; });
+  var rows=all.filter(function(x){ if(S.nfilter==='yes') return !!x.ordered; if(S.nfilter==='no') return !x.ordered; return true; });
   var sumEl=document.getElementById('needSummary');
-  if(sumEl) sumEl.textContent=(vi?'\ud83d\udccb Danh mục cần mua — ':'\ud83d\udccb Shopping list — ')+rows.length+(vi?' món · ':' items · ')+matched+(vi?' có báo giá':' with quotes');
+  if(sumEl) sumEl.textContent=(vi?'\ud83d\udccb Danh mục cần mua — ':'\ud83d\udccb Shopping list — ')+all.length+(vi?' món · ':' items · ')+matched+(vi?' có báo giá':' with quotes')+(orderedN?' · '+orderedN+(vi?' đã đặt':' ordered'):'');
   var h='';
   h+='<div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">'
     + '<input id="needName" placeholder="'+(vi?'Tên món cần mua…':'Item to buy…')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;min-width:190px;font-size:14px;">'
     + '<input id="needGroup" placeholder="'+(vi?'Nhóm (vd: Phòng ngủ)':'Group')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:150px;font-size:14px;">'
     + '<input id="needQty" type="number" min="1" step="1" value="1" title="'+(vi?'SL / phòng':'Qty / room')+'" style="width:66px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">'
     + '<span class="mini">'+(vi?'Số phòng:':'Rooms:')+'</span><input id="needRooms" type="number" min="1" step="1" value="'+N+'" style="width:64px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">'
+    + '<select id="needFilter" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;"><option value="all"'+(S.nfilter==='all'?' selected':'')+'>'+(vi?'Tất cả':'All')+'</option><option value="no"'+(S.nfilter==='no'?' selected':'')+'>'+(vi?'Chưa đặt':'Not ordered')+'</option><option value="yes"'+(S.nfilter==='yes'?' selected':'')+'>'+(vi?'Đã đặt':'Ordered')+'</option></select>'
     + '<button class="btn" onclick="addNeed()">'+(vi?'➕ Thêm':'➕ Add')+'</button>'
     + '<button class="btn ghost" onclick="document.getElementById(\'needFile\').click()">'+(vi?'📥 Nhập CSV':'📥 Import CSV')+'</button>'
     + '<input type="file" id="needFile" accept=".csv" style="display:none" onchange="importNeedCSV(this)">'
     + '<button class="btn ghost" onclick="exportNeed()">'+(vi?'💾 Xuất CSV':'💾 Export CSV')+'</button>'
     + '<button class="btn ghost" onclick="clearNeed()">'+(vi?'🧹 Xóa hết':'🧹 Clear')+'</button>'
     + '</div>';
-  if(!rows.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b>.':'No shopping list yet. Add manually or <b>Import CSV</b>.') +'</div>'; el.innerHTML=h; return; }
-  h+='<p class="mini" style="margin:0 0 8px;">'+ (vi?('Tổng '+rows.length+' món · '+matched+' đã có báo giá · '+(rows.length-matched)+' chưa có báo giá · cột “Tổng” tính cho '+N+' phòng'):(rows.length+' items · '+matched+' with quotes · '+(rows.length-matched)+' without · “Total” is for '+N+' rooms')) +'</p>';
-  h+='<div class="tblwrap needwrap"><table><thead><tr><th>#</th><th>'+ (vi?'Tên món':'Item') +'</th><th class="num">'+ (vi?'SL/phòng':'Qty/room') +'</th><th class="num">'+ (vi?'Tổng':'Total') +'</th><th>'+ (vi?'Tình trạng báo giá':'Quote status') +'</th><th class="noprint"></th></tr></thead><tbody>';
+  if(!all.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b>.':'No shopping list yet. Add manually or <b>Import CSV</b>.') +'</div>'; el.innerHTML=h; bindNeedInputs(el); bindNeedFilter(el); return; }
+  if(!rows.length){ h+='<div class="empty">'+ (vi?'Không có món nào khớp bộ lọc.':'No items match the filter.') +'</div>'; el.innerHTML=h; bindNeedInputs(el); bindNeedFilter(el); return; }
+  h+='<p class="mini" style="margin:0 0 8px;">'+ (vi?('Hiển thị '+rows.length+'/'+all.length+' món · '+matched+' có báo giá · '+orderedN+' đã đặt · cột “Tổng” cho '+N+' phòng'):('Showing '+rows.length+'/'+all.length+' items · '+matched+' with quotes · '+orderedN+' ordered · “Total” for '+N+' rooms')) + (S.nfilter!=='all'?' · <b>'+(vi?'đang lọc':'filtered')+': '+(S.nfilter==='yes'?(vi?'đã đặt':'ordered'):(vi?'chưa đặt':'not ordered'))+'</b>':'') +'</p>';
+  h+='<div class="tblwrap needwrap"><table><thead><tr><th>#</th><th class="c">'+ (vi?'Đã đặt':'Ordered') +'</th><th>'+ (vi?'Tên món':'Item') +'</th><th class="num">'+ (vi?'SL/phòng':'Qty/room') +'</th><th class="num">'+ (vi?'Tổng':'Total') +'</th><th>'+ (vi?'Tình trạng báo giá':'Quote status') +'</th><th class="noprint"></th></tr></thead><tbody>';
   var order=[], map={};
   rows.forEach(function(x){ var g=x.group||''; if(!map[g]){ map[g]=[]; order.push(g); } map[g].push(x); });
   order.forEach(function(g){
-    h+='<tr class="grouphdr"><td colspan="6">'+esc(g||(vi?'(chưa xếp nhóm)':'(no group)'))+'</td></tr>';
+    h+='<tr class="grouphdr"><td colspan="7">'+esc(g||(vi?'(chưa xếp nhóm)':'(no group)'))+'</td></tr>';
     map[g].forEach(function(x){
-      var i=rows.indexOf(x);
+      var i=all.indexOf(x);
       var total = x.flat ? x.qty : (x.qty*N);
       var keys=needKeys(x), status='';
       if(keys.length){
@@ -852,7 +860,8 @@ function renderNeed(){
           status='<span class="tag">'+keys.length+' '+(vi?'món':'items')+'</span> '+(vi?'tổng ':'total ')+money(tot2)+' <span class="mini">('+esc(names.join(' + '))+') · '+esc(Object.keys(supSet).join(', '))+'</span>';
         }
       } else status='<span class="tag sample">⚠ '+(vi?'chưa có báo giá':'no quote yet')+'</span>';
-      h+='<tr><td>'+(i+1)+'</td>'
+      h+='<tr'+(x.ordered?' class="ordered"':'')+'><td>'+(i+1)+'</td>'
+        +'<td class="c"><input type="checkbox" data-order="'+i+'"'+(x.ordered?' checked':'')+'></td>'
         +'<td><b>'+esc(x.name)+'</b>'
           +(x.desc?'<div class="mini">'+esc(x.desc)+'</div>':'')
           +(x.note?'<div class="mini" style="color:var(--gold);">✎ '+esc(x.note)+'</div>':'')
@@ -865,7 +874,7 @@ function renderNeed(){
     });
   });
   h+='</tbody></table></div>';
-  el.innerHTML=h; bindNeedInputs(el);
+  el.innerHTML=h; bindNeedInputs(el); bindNeedFilter(el);
   var ri=document.getElementById('needRooms'); if(ri) ri.addEventListener('change', function(){ setRooms(ri.value); });
 }
 function leadQty(s){ var m=String(s||'').match(/^\s*(\d+)\s*(cái|chiếc|chiec|cai|bộ|bo|ổ|o)\b/i); return m?+m[1]:0; }
