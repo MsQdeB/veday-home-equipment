@@ -420,7 +420,7 @@ var NEED_SEED = [
   {group:"Phòng ngủ",name:"Ga giường",desc:"2 bộ. Nên lựa cotton sáng màu cho sạch sẽ và dễ làm sạch",link:"",note:"",qty:2},
   {group:"Phòng ngủ",name:"Vỏ gối",desc:"2 cái / phòng",link:"",note:"",qty:2},
   {group:"Phòng ngủ",name:"Ruột gối",desc:"2 cái / phòng",link:"",note:"",qty:2},
-  {group:"Phòng ngủ",name:"Mền",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Mền",desc:"1 cái / phòng (= vỏ chăn + ruột chăn)",link:"",note:"",qty:1,alias:["Vỏ chăn","Ruột chăn"]},
   {group:"Phòng ngủ",name:"Tấm bảo vệ nệm (topper)",desc:"1 cái / phòng",link:"",note:"",qty:1},
   {group:"Phòng ngủ",name:"Rèm",desc:"",link:"",note:"",qty:1},
   {group:"Phòng ngủ",name:"Đèn trần",desc:"3 ánh sáng",link:"",note:"",qty:1},
@@ -777,16 +777,20 @@ function sumLines(lines){ return lines.reduce(function(a,x){ return a+tot(x.o); 
 
 /* ---------------- shopping list (danh mục cần mua) ---------------- */
 function normName(x){ return String(x||'').toLowerCase().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
-function needMatch(name){
-  var n=normName(name); if(!n) return [];
-  var hits=[];
-  S.offers.forEach(function(o){
-    var on=normName(o.item); if(!on) return;
-    if(on===n || (n.length>=5 && on.indexOf(n)>=0) || (on.length>=5 && n.indexOf(on)>=0)){ var k=itemKey(o); if(hits.indexOf(k)<0) hits.push(k); }
+var NEED_ALIAS={}; NEED_ALIAS[normName('Mền')]=['Vỏ chăn','Ruột chăn'];
+function needKeys(x){
+  var names=[x.name].concat(x.alias||[]).concat(NEED_ALIAS[normName(x.name)]||[]); var hits=[];
+  names.forEach(function(nm){
+    var n=normName(nm); if(!n) return;
+    S.offers.forEach(function(o){
+      var on=normName(o.item); if(!on) return;
+      var shorter=(n.length<=on.length)?n:on, longer=(n.length<=on.length)?on:n;
+      if(n===on || (shorter.length>=5 && longer.indexOf(shorter)===0)){ var k=itemKey(o); if(hits.indexOf(k)<0) hits.push(k); }
+    });
   });
   return hits;
 }
-function syncNeedQty(){ (S.need||[]).forEach(function(x){ needMatch(x.name).forEach(function(k){ S.qty[k]=x.qty; }); }); }
+function syncNeedQty(){ (S.need||[]).forEach(function(x){ needKeys(x).forEach(function(k){ S.qty[k]=x.qty; }); }); }
 function addNeed(){
   var n=(document.getElementById('needName').value||'').trim(); if(!n) return;
   var q=parseFloat(document.getElementById('needQty').value)||1;
@@ -800,7 +804,7 @@ function clearNeed(){ if(!confirm(L()==='vi'?'Xóa hết danh mục cần mua?':
 function setNeedQty(i,v){ var q=parseFloat(v)||1; S.need[i].qty=q; syncNeedQty(); save(); render(); }
 function setRooms(v){ S.rooms=Math.max(1, parseInt(v)||1); save(); render(); }
 function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); }
-function viewNeed(i){ var x=S.need[i]; var m=needMatch(x.name); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
+function viewNeed(i){ var x=S.need[i]; var m=needKeys(x); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
 function exportNeed(){
   var N=S.rooms||6;
   var rows=[['group','name','desc','qty_per_room','total','flat','link','note']];
@@ -810,7 +814,7 @@ function exportNeed(){
 function renderNeed(){
   var el=document.getElementById('need'); var vi=L()==='vi';
   var rows=S.need||[]; var N=S.rooms||6;
-  var matched=0; rows.forEach(function(x){ if(needMatch(x.name).length) matched++; });
+  var matched=0; rows.forEach(function(x){ if(needKeys(x).length) matched++; });
   var sumEl=document.getElementById('needSummary');
   if(sumEl) sumEl.textContent=(vi?'\ud83d\udccb Danh mục cần mua — ':'\ud83d\udccb Shopping list — ')+rows.length+(vi?' món · ':' items · ')+matched+(vi?' có báo giá':' with quotes');
   var h='';
@@ -835,12 +839,18 @@ function renderNeed(){
     map[g].forEach(function(x){
       var i=rows.indexOf(x);
       var total = x.flat ? x.qty : (x.qty*N);
-      var keys=needMatch(x.name), status='';
+      var keys=needKeys(x), status='';
       if(keys.length){
         var offs=S.offers.filter(function(o){ return keys.indexOf(itemKey(o))>=0; });
-        var b=bestOf(offs), mx=Math.max.apply(null, offs.map(tot)), bt=tot(b);
-        status='<span class="tag">'+offs.length+' '+(vi?'báo giá':'quotes')+'</span> '+(vi?'rẻ nhất ':'from ')+money(b.price)+' <span class="mini">('+esc(b.supplier)+')</span>';
-        if(offs.length>1 && mx>bt) status+=' <span class="mini">· '+ (vi?'chênh ':'spread ')+money(mx-bt)+'</span>';
+        var bestPer={}, supSet={}, tot2=0, names=[];
+        keys.forEach(function(k){ var ko=offs.filter(function(o){return itemKey(o)===k;}); var b=bestOf(ko); bestPer[k]=b; supSet[b.supplier]=1; tot2+=b.price; names.push(b.item); });
+        if(keys.length===1){
+          var b1=bestPer[keys[0]]; var mx=Math.max.apply(null, offs.map(tot)), bt=tot(b1);
+          status='<span class="tag">'+offs.length+' '+(vi?'báo giá':'quotes')+'</span> '+(vi?'rẻ nhất ':'from ')+money(b1.price)+' <span class="mini">('+esc(b1.supplier)+')</span>';
+          if(offs.length>1 && mx>bt) status+=' <span class="mini">· '+ (vi?'chênh ':'spread ')+money(mx-bt)+'</span>';
+        } else {
+          status='<span class="tag">'+keys.length+' '+(vi?'món':'items')+'</span> '+(vi?'tổng ':'total ')+money(tot2)+' <span class="mini">('+esc(names.join(' + '))+') · '+esc(Object.keys(supSet).join(', '))+'</span>';
+        }
       } else status='<span class="tag sample">⚠ '+(vi?'chưa có báo giá':'no quote yet')+'</span>';
       h+='<tr><td>'+(i+1)+'</td>'
         +'<td><b>'+esc(x.name)+'</b>'
@@ -851,7 +861,7 @@ function renderNeed(){
         +'<td class="num"><input class="qin" type="number" min="1" value="'+x.qty+'" data-need="'+i+'"></td>'
         +'<td class="num"><b>'+total+'</b>'+(x.flat?' <span class="mini">('+(vi?'chung':'bldg')+')</span>':'')+'</td>'
         +'<td>'+status+'</td>'
-        +'<td class="noprint c">'+(keys.length?'<button class="btn tiny ghost" onclick="viewNeed('+i+')">'+(vi?'Xem':'View')+'</button> ':'')+'<button class="btn tiny ghost" onclick="delNeed('+i+')">✖</button></td></tr>';
+        +'<td class="noprint c">'+(keys.length===1?'<button class="btn tiny ghost" onclick="viewNeed('+i+')">'+(vi?'Xem':'View')+'</button> ':'')+'<button class="btn tiny ghost" onclick="delNeed('+i+')">✖</button></td></tr>';
     });
   });
   h+='</tbody></table></div>';
