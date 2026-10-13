@@ -139,11 +139,23 @@
   </div>
 </header>
 
+<!-- ============ TEMP SHORTLIST (top) ============ -->
+<div class="panel" style="border-color:var(--green);">
+  <h2 data-vi="🛒 Chốt mua tạm thời (danh sách nháp)" data-en="🛒 Temporary shortlist (draft picks)"></h2>
+  <div id="plan"></div>
+</div>
+
 <!-- ============ KPIs ============ -->
 <div class="grid" id="kpis"></div>
 
-<div class="note-box" data-vi="<b>Cách dùng:</b> dùng ô lọc để tìm món (lọc theo <b>tên món</b> / NCC; tick “<b>Chỉ món có ≥2 báo giá</b>” để so sánh). Mở <b>So sánh</b>: ô viền xanh + <b>#1</b> = rẻ nhất, nhập <b>SL cần mua</b> để tính thành tiền. Bấm <b>Chọn mua</b> → món vào <b>🛒 Kế hoạch mua</b> theo NCC (có nút Copy tin nhắn gửi NCC)."
-  data-en="<b>How to use:</b> use the filters to find an item (filter by <b>item name</b> / supplier; tick “<b>Only items with 2+ quotes</b>” to compare). Open <b>Compare</b>: green box + <b>#1</b> = cheapest, set <b>Qty</b> to see the total. Click <b>Pick</b> → the item goes into the <b>🛒 Purchase plan</b> by supplier (with a copy-message button)."></div>
+<!-- ============ SHOPPING LIST ============ -->
+<div class="panel">
+  <h2 data-vi="📋 Danh mục cần mua (số lượng)" data-en="📋 Shopping list (quantities)"></h2>
+  <div id="need"></div>
+</div>
+
+<div class="note-box" data-vi="<b>Cách dùng:</b> <b>🛒 Chốt mua tạm thời</b> (trên cùng) là danh sách nháp bạn chọn mua — bấm <b>Chọn mua</b> ở tab <b>So sánh</b> để thêm. <b>📋 Danh mục cần mua</b> là danh sách món + số lượng cần mua (nhập tay hoặc Import CSV). Bảng so sánh bên dưới để so giá từng món."
+  data-en="<b>How to use:</b> <b>🛒 Temporary shortlist</b> (top) is your draft pick list — click <b>Pick</b> in the <b>Compare</b> tab to add. <b>📋 Shopping list</b> is the items + quantities you need (add manually or Import CSV). The comparison below compares prices per item."></div>
 
 <!-- ============ TOOLBAR ============ -->
 <div class="panel noprint">
@@ -179,12 +191,6 @@
 
 <!-- ============ MAIN ============ -->
 <div id="view"></div>
-
-<!-- ============ PURCHASE PLAN ============ -->
-<div class="panel">
-  <h2 data-vi="🛒 Kế hoạch mua – theo nhà cung cấp" data-en="🛒 Purchase plan – by supplier"></h2>
-  <div id="plan"></div>
-</div>
 
 <!-- ============ SUPPLIER SUMMARY ============ -->
 <div class="panel">
@@ -372,7 +378,7 @@ var INGESTED = [
 ];
 
 /* ---------------- state ---------------- */
-var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{},
+var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{}, need:[],
           f:{cat:'',sup:'',item:'',q:'',pmin:'',pmax:'',install:false,delivery:false,vat:false,multi:false,onlyimp:false,sort:'cat'} };
 
 function L(){ return S.lang; }
@@ -387,6 +393,7 @@ function load(){
     var qt=localStorage.getItem('veday_qty'); if(qt) S.qty=JSON.parse(qt);
     var rt=localStorage.getItem('veday_rate'); if(rt) S.rate=JSON.parse(rt);
     var im=localStorage.getItem('veday_imp'); if(im) S.imp=JSON.parse(im);
+    var nd=localStorage.getItem('veday_need'); if(nd) S.need=JSON.parse(nd);
     var lg=localStorage.getItem('veday_lang'); if(lg) S.lang=lg;
   }catch(e){}
   if(!localStorage.getItem('veday_init_v2')){
@@ -399,6 +406,7 @@ function save(){
   localStorage.setItem('veday_qty', JSON.stringify(S.qty));
   localStorage.setItem('veday_rate', JSON.stringify(S.rate));
   localStorage.setItem('veday_imp', JSON.stringify(S.imp));
+  localStorage.setItem('veday_need', JSON.stringify(S.need));
   localStorage.setItem('veday_lang', S.lang);
 }
 function uid(){ return 'o'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -513,6 +521,7 @@ function render(){
   renderKPIs();
   if(S.view==='cmp') renderCompare(); else renderTable();
   renderPlan();
+  renderNeed();
   renderSuppliers();
   save();
 }
@@ -521,9 +530,6 @@ function renderKPIs(){
   var items={}, sups={};
   S.offers.forEach(function(o){ items[itemKey(o)]=1; sups[o.supplier]=1; });
   var nItems=Object.keys(items).length, nSup=Object.keys(sups).length;
-  var groups=groupOffers(S.offers), cheap=0, max=0;
-  groups.forEach(function(g){ var ts=g.offers.map(tot); cheap+=Math.min.apply(null,ts); max+=Math.max.apply(null,ts); });
-  var save_=max-cheap;
   var chosenTotal=0, chosenN=0;
   Object.keys(S.chosen).forEach(function(k){ var o=offerById(S.chosen[k]); if(o){ chosenTotal+=tot(o); chosenN++; } });
   var k=function(label,val,note,cls){
@@ -534,8 +540,6 @@ function renderKPIs(){
     k(vi?'Hạng mục':'Items', nItems, vi?'đang hỏi giá':'being quoted') +
     k(vi?'Nhà cung cấp':'Suppliers', nSup, vi?'đã gửi báo giá':'sent quotes') +
     k(vi?'Báo giá đã nhập':'Quotes entered', S.offers.length, vi?'dòng dữ liệu':'rows') +
-    k(vi?'Phương án rẻ nhất':'Cheapest plan', money(cheap), vi?'nếu chọn giá thấp nhất từng món':'if cheapest picked per item','best') +
-    k(vi?'Tiết kiệm tối đa':'Max saving', money(save_), vi?'so với chọn giá cao nhất':'vs most expensive per item','save') +
     k(vi?'Đã chốt mua':'Picked to buy', money(chosenTotal), chosenN+'/'+nItems+' '+ (vi?'hạng mục':'items picked'));
 }
 
@@ -643,20 +647,122 @@ function chosenList(){
   return Object.keys(S.chosen).map(function(k){ var o=offerById(S.chosen[k]); return o?{key:k,o:o}:null; }).filter(Boolean);
 }
 function sumLines(lines){ return lines.reduce(function(a,x){ return a+tot(x.o); },0); }
+
+/* ---------------- shopping list (danh mục cần mua) ---------------- */
+function normName(x){ return String(x||'').toLowerCase().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
+function needMatch(name){
+  var n=normName(name); if(!n) return [];
+  var hits=[];
+  S.offers.forEach(function(o){
+    var on=normName(o.item); if(!on) return;
+    if(on===n || (n.length>=5 && on.indexOf(n)>=0) || (on.length>=5 && n.indexOf(on)>=0)){ var k=itemKey(o); if(hits.indexOf(k)<0) hits.push(k); }
+  });
+  return hits;
+}
+function syncNeedQty(){ (S.need||[]).forEach(function(x){ needMatch(x.name).forEach(function(k){ S.qty[k]=x.qty; }); }); }
+function addNeed(){
+  var n=(document.getElementById('needName').value||'').trim(); if(!n) return;
+  var q=parseFloat(document.getElementById('needQty').value)||1;
+  S.need.push({name:n, qty:q});
+  document.getElementById('needName').value=''; document.getElementById('needQty').value=1;
+  syncNeedQty(); save(); render();
+}
+function delNeed(i){ S.need.splice(i,1); save(); render(); }
+function clearNeed(){ if(!confirm(L()==='vi'?'Xóa hết danh mục cần mua?':'Clear the shopping list?')) return; S.need=[]; save(); render(); }
+function setNeedQty(i,v){ var q=parseFloat(v)||1; S.need[i].qty=q; syncNeedQty(); save(); render(); }
+function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); }
+function viewNeed(i){ var x=S.need[i]; var m=needMatch(x.name); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
+function exportNeed(){
+  var rows=[['name','qty']];
+  (S.need||[]).forEach(function(x){ rows.push([x.name,x.qty]); });
+  dl('veday-danh-muc-can-mua-'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.map(function(r){ return r.map(csvCell).join(','); }).join('\n'));
+}
+function renderNeed(){
+  var el=document.getElementById('need'); var vi=L()==='vi';
+  var rows=S.need||[];
+  var h='';
+  h+='<div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">'
+    + '<input id="needName" placeholder="'+(vi?'Tên món cần mua…':'Item to buy…')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;min-width:220px;font-size:14px;">'
+    + '<input id="needQty" type="number" min="1" step="1" value="1" style="width:78px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">'
+    + '<button class="btn" onclick="addNeed()">'+(vi?'➕ Thêm':'➕ Add')+'</button>'
+    + '<button class="btn ghost" onclick="document.getElementById(\'needFile\').click()">'+(vi?'📥 Nhập CSV':'📥 Import CSV')+'</button>'
+    + '<input type="file" id="needFile" accept=".csv" style="display:none" onchange="importNeedCSV(this)">'
+    + '<button class="btn ghost" onclick="exportNeed()">'+(vi?'💾 Xuất CSV':'💾 Export CSV')+'</button>'
+    + '<button class="btn ghost" onclick="clearNeed()">'+(vi?'🧹 Xóa hết':'🧹 Clear')+'</button>'
+    + '</div>';
+  if(!rows.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b> (cần cột tên món &amp; số lượng).':'No shopping list yet. Add manually or <b>Import CSV</b> (needs a name &amp; quantity column).') +'</div>'; el.innerHTML=h; return; }
+  var matched=0; rows.forEach(function(x){ if(needMatch(x.name).length) matched++; });
+  h+='<p class="mini" style="margin:0 0 8px;">'+ (vi?('Tổng '+rows.length+' món · '+matched+' đã có báo giá · '+(rows.length-matched)+' chưa có báo giá'):(rows.length+' items · '+matched+' with quotes · '+(rows.length-matched)+' without')) +'</p>';
+  h+='<div class="tblwrap"><table><thead><tr><th>#</th><th>'+ (vi?'Tên món':'Item') +'</th><th class="num">'+ (vi?'SL cần mua':'Qty') +'</th><th>'+ (vi?'Tình trạng báo giá':'Quote status') +'</th><th class="noprint"></th></tr></thead><tbody>';
+  rows.forEach(function(x,i){
+    var keys=needMatch(x.name), status='';
+    if(keys.length){
+      var offs=S.offers.filter(function(o){ return keys.indexOf(itemKey(o))>=0; });
+      var b=bestOf(offs), mx=Math.max.apply(null, offs.map(tot)), bt=tot(b);
+      status='<span class="tag">'+offs.length+' '+(vi?'báo giá':'quotes')+'</span> '+(vi?'rẻ nhất ':'from ')+money(b.price)+' <span class="mini">('+esc(b.supplier)+')</span>';
+      if(offs.length>1 && mx>bt) status+=' <span class="mini">· '+ (vi?'chênh ':'spread ')+money(mx-bt)+'</span>';
+    } else status='<span class="tag sample">⚠ '+(vi?'chưa có báo giá':'no quote yet')+'</span>';
+    h+='<tr><td>'+(i+1)+'</td>'
+      +'<td><b>'+esc(x.name)+'</b></td>'
+      +'<td class="num"><input class="qin" type="number" min="1" value="'+x.qty+'" data-need="'+i+'"></td>'
+      +'<td>'+status+'</td>'
+      +'<td class="noprint c">'+(keys.length?'<button class="btn tiny ghost" onclick="viewNeed('+i+')">'+(vi?'Xem':'View')+'</button> ':'')+'<button class="btn tiny ghost" onclick="delNeed('+i+')">✖</button></td></tr>';
+  });
+  h+='</tbody></table></div>';
+  el.innerHTML=h; bindNeedInputs(el);
+}
+function importNeedCSV(input){
+  var f=input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    var rows=parseCSV(r.result); if(!rows.length){ input.value=''; return; }
+    var head=rows[0].map(function(x){ return String(x).toLowerCase(); });
+    var nameKeys=['tên','ten','hạng mục','hang muc','item','name','nội thất','noi that','chi tiết','chi tiet','mô tả','mo ta','sản phẩm','san pham','thiết bị','thiet bi'];
+    var qtyKeys=['sl','số lượng','so luong','qty','quantity','số lg','so lg'];
+    var nameIdx=-1, qtyIdx=-1;
+    for(var i=0;i<head.length;i++){
+      if(nameIdx<0 && nameKeys.some(function(k){ return head[i].indexOf(k)>=0; })) nameIdx=i;
+      if(qtyIdx<0 && qtyKeys.some(function(k){ return head[i].indexOf(k)>=0; })) qtyIdx=i;
+    }
+    var start=0;
+    if(nameIdx>=0||qtyIdx>=0) start=1;
+    if(nameIdx<0) nameIdx=1;
+    var added=0;
+    for(var ri=start; ri<rows.length; ri++){
+      var c=rows[ri]; if(!c || c.join('').trim()==='') continue;
+      var name=(c[nameIdx]||'').trim();
+      if(!name){ for(var j=0;j<c.length;j++){ var v=String(c[j]||'').trim(); if(v && isNaN(v.replace(/[.,]/g,''))){ name=v; break; } } }
+      if(!name) continue;
+      if(/^(tổng|cộng|sum|total|stt)\b/i.test(name)) continue;
+      var q= qtyIdx>=0 ? parseFloat(String(c[qtyIdx]||'').replace(/[^0-9.]/g,'')) : NaN;
+      if(!(q>0)) q=1;
+      S.need.push({name:name, qty:q}); added++;
+    }
+    syncNeedQty(); save(); render();
+    alert((L()==='vi'?'Đã nhập ':'Imported ')+added+(L()==='vi'?' dòng vào danh mục cần mua.':' rows into the shopping list.'));
+    input.value='';
+  };
+  r.readAsText(f);
+}
+function itemStats(key){
+  var offs=S.offers.filter(function(o){ return itemKey(o)===key; });
+  var ts=offs.map(tot);
+  return { n:offs.length, min:Math.min.apply(null,ts), max:Math.max.apply(null,ts) };
+}
 function renderPlan(){
   var el=document.getElementById('plan'); var vi=L()==='vi';
   var chosen=chosenList();
   if(!chosen.length){
-    el.innerHTML='<div class="empty">'+ (vi?'Chưa chọn món nào. Sang tab <b>So sánh</b>, bấm <b>Chọn mua</b> ở món muốn mua để đưa vào đây.':'Nothing picked yet. Go to the <b>Compare</b> tab and click <b>Pick</b> on the items you want.') +'</div>';
+    el.innerHTML='<div class="empty">'+ (vi?'Chưa chốt món nào. Sang tab <b>So sánh</b>, bấm <b>Chọn mua</b> ở món muốn mua để đưa vào danh sách nháp này.':'Nothing shortlisted yet. Go to the <b>Compare</b> tab and click <b>Pick</b> to add items here.') +'</div>';
     return;
   }
   var bySup={};
   chosen.forEach(function(x){ (bySup[x.o.supplier]=bySup[x.o.supplier]||[]).push(x); });
   var sups=Object.keys(bySup);
   sups.sort(function(a,b){ return sumLines(bySup[b])-sumLines(bySup[a]); });
-  var grand=0, html='';
+  var grand=0, totalSave=0, html='';
   html+='<div class="noprint" style="margin-bottom:10px;display:flex;gap:8px;flex-wrap:wrap;">'
-      + '<button class="btn ghost" onclick="exportPlan()">'+(vi?'💾 Xuất kế hoạch (CSV)':'💾 Export plan (CSV)')+'</button>'
+      + '<button class="btn ghost" onclick="exportPlan()">'+(vi?'💾 Xuất danh sách (CSV)':'💾 Export shortlist (CSV)')+'</button>'
       + '</div>';
   sups.forEach(function(s){
     var lines=bySup[s].slice().sort(function(a,b){ return catOrder(a.o.cat)-catOrder(b.o.cat); });
@@ -667,22 +773,33 @@ function renderPlan(){
         + '<th>'+ (vi?'Hạng mục':'Item') +'</th><th>'+ (vi?'Model / quy cách':'Model / spec') +'</th>'
         + '<th>'+ (vi?'ĐVT':'Unit') +'</th><th class="num">'+ (vi?'SL':'Qty') +'</th>'
         + '<th class="num">'+ (vi?'Đơn giá':'Unit price') +'</th><th class="num">'+ (vi?'Thành tiền':'Total') +'</th>'
-        + '<th>'+ (vi?'Bao gồm':'Includes') +'</th><th class="noprint"></th></tr></thead><tbody>';
+        + '<th class="num">'+ (vi?'Tiết kiệm':'Saved') +'</th>'
+        + '<th>'+(vi?'Bao gồm':'Includes')+'</th><th class="noprint"></th></tr></thead><tbody>';
     lines.forEach(function(x){
       var o=x.o; var incl=[]; if(o.install)incl.push(vi?'Lắp đặt':'Install'); if(o.delivery)incl.push(vi?'Vận chuyển':'Delivery'); if(o.vat)incl.push('VAT'); if(o.warranty>0) incl.push((vi?'BH ':'Wty ')+o.warranty+'m');
+      var st=itemStats(x.key), saveCell='—';
+      if(st.n>1){
+        var sav=st.max-tot(o), over=tot(o)-st.min; totalSave+=sav;
+        if(over>0) saveCell='<span class="chg">▲ '+money(over)+'</span><div class="mini">'+ (vi?'cao hơn rẻ nhất':'above cheapest') +'</div>';
+        else if(sav>0) saveCell='<span class="save">▼ '+money(sav)+'</span><div class="mini">'+ (vi?'vs NCC đắt nhất':'vs priciest') +'</div>';
+        else saveCell='<span class="mini">'+ (vi?'rẻ nhất':'cheapest') +'</span>';
+      }
       html+='<tr><td><b>'+esc(o.item)+'</b> <a class="lbtn noprint" target="_blank" rel="noopener" href="'+attr(researchUrl(o))+'">🔎</a>'+(o.model?'<div class="mini">'+esc(o.model)+'</div>':'')+'</td>'
         +'<td class="mini">'+esc(o.spec||'')+'</td><td>'+esc(o.unit||'')+'</td>'
         +'<td class="num"><input class="qin" type="number" min="1" value="'+qtyOf(o)+'" data-key="'+esc(x.key)+'"></td>'
         +'<td class="num">'+money(o.price)+'</td><td class="num"><b>'+money(tot(o))+'</b></td>'
+        +'<td class="num">'+saveCell+'</td>'
         +'<td class="mini">'+incl.join(', ')+'</td>'
         +'<td class="noprint c"><button class="btn tiny ghost" onclick="pick('+attr(jsstr(x.key))+','+attr(jsstr(o.id))+')" title="'+(vi?'Bỏ chọn':'Unpick')+'">✖</button></td></tr>';
     });
-    html+='<tr><td colspan="5" class="plan-total">'+ (vi?'Cộng':'Subtotal') +'</td><td class="num plan-total">'+money(sub)+'</td><td colspan="2"></td></tr>';
+    html+='<tr><td colspan="5" class="plan-total">'+ (vi?'Cộng':'Subtotal') +'</td><td class="num plan-total">'+money(sub)+'</td><td colspan="3"></td></tr>';
     html+='</tbody></table></div></div>';
   });
-  html+='<div class="plan-sup" style="border-color:var(--green);background:#f2f7f4;"><h3 style="margin:0;">'+ (vi?'TỔNG CỘNG ('+chosen.length+' món)':'GRAND TOTAL ('+chosen.length+' items)') +'<span class="sub2" style="margin-left:auto;font-size:16px;color:var(--green);font-weight:800;">'+money(grand)+'</span></h3></div>';
+  html+='<div class="plan-sup" style="border-color:var(--green);background:#f2f7f4;"><h3 style="margin:0;">'+ (vi?'TỔNG CỘNG ('+chosen.length+' món)':'GRAND TOTAL ('+chosen.length+' items)') +'<span class="sub2" style="margin-left:auto;font-size:16px;color:var(--green);font-weight:800;">'+money(grand)+'</span></h3>';
+  if(totalSave>0) html+='<p class="mini" style="margin:6px 0 0;color:var(--green2);font-weight:700;">'+ (vi?('✔ Tiết kiệm so với mua cùng món ở NCC đắt nhất: '+money(totalSave)):('✔ Saved vs buying the same items from the priciest supplier: '+money(totalSave))) +'</p>';
+  html+='</div>';
   var remaining=allGroupKeys().length-chosen.length;
-  if(remaining>0) html+='<p class="legend">'+ (vi?'Còn '+remaining+' hạng mục chưa chọn.':'Still '+remaining+' items not picked.') +'</p>';
+  if(remaining>0) html+='<p class="legend">'+ (vi?'Còn '+remaining+' hạng mục chưa chốt.':'Still '+remaining+' items not shortlisted.') +'</p>';
   el.innerHTML=html; bindQtyInputs(el);
 }
 function copySupplier(s){
