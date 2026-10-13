@@ -519,7 +519,7 @@ function load(){
     var rm=localStorage.getItem('veday_rooms'); if(rm) S.rooms=(+rm||6);
     var nd=localStorage.getItem('veday_need');
     if(nd){ S.need=JSON.parse(nd); }
-    else if(typeof NEED_SEED!=='undefined'){ S.need=NEED_SEED.map(function(x){ return Object.assign({},x); }); }
+    if((!S.need||!S.need.length) && !localStorage.getItem('veday_need_cleared') && typeof NEED_SEED!=='undefined'){ S.need=NEED_SEED.map(function(x){ return Object.assign({},x); }); }
     var lg=localStorage.getItem('veday_lang'); if(lg) S.lang=lg;
   }catch(e){}
   if(!localStorage.getItem('veday_init_v2')){
@@ -796,7 +796,7 @@ function addNeed(){
   syncNeedQty(); save(); render();
 }
 function delNeed(i){ S.need.splice(i,1); save(); render(); }
-function clearNeed(){ if(!confirm(L()==='vi'?'Xóa hết danh mục cần mua?':'Clear the shopping list?')) return; S.need=[]; save(); render(); }
+function clearNeed(){ if(!confirm(L()==='vi'?'Xóa hết danh mục cần mua?':'Clear the shopping list?')) return; S.need=[]; localStorage.setItem('veday_need_cleared','1'); save(); render(); }
 function setNeedQty(i,v){ var q=parseFloat(v)||1; S.need[i].qty=q; syncNeedQty(); save(); render(); }
 function setRooms(v){ S.rooms=Math.max(1, parseInt(v)||1); save(); render(); }
 function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); }
