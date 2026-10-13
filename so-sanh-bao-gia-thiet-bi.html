@@ -116,6 +116,8 @@
   form.entry .full{ grid-column:1/-1; }
   details.entrybox summary{ cursor:pointer; font-weight:700; color:var(--green); }
 
+  .needwrap{ max-height:none; }
+  .grouphdr td{ background:#e8f0ea; color:var(--green); font-weight:800; font-size:13px; }
   @media print{
     body{ padding:6mm; background:#fff; font-size:11.5px; }
     .noprint{ display:none !important; }
@@ -377,6 +379,98 @@ var INGESTED = [
   {cat:"dien",item:"Ống đồng máy lạnh",spec:"Ống đồng Thái Lan 7 zem",unit:"mét",qty:1,supplier:"Điện Lạnh Lê Thông",model:"",price:350000,install:false,delivery:false,vat:false,warranty:0,note:"Báo giá ống đồng (ảnh, A. Lâm); ống đồng Thái Lan",source:"photo"},
 ];
 
+/* ---- default shopping list (from 'xây nhà PCT - Nội thất chi tiết') ---- */
+var NEED_SEED = [
+  {group:"Phòng ngủ",name:"Giường",desc:"1m6×2m hoặc 1m8×2m · chất liệu: sắt gỗ / MDF / giường gỗ khung sắt?",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Nệm",desc:"Nệm foam/lò xo, dày 20–25cm",link:"https://nemaroma.com/danh-muc-san-pham/nem/nem-lo-xo/",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Táp đầu giường",desc:"2 cái, 2 bên giường",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Tủ quần áo",desc:"Liền tường, đã chừa sẵn",link:"",note:"chất liệu phù hợp",qty:1},
+  {group:"Phòng ngủ",name:"Bàn làm việc",desc:"Phòng 202 và 302",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Ghế làm việc",desc:"Phòng 202 và 302",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Gương toàn thân",desc:"",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Ga giường",desc:"2 bộ. Nên lựa cotton sáng màu cho sạch sẽ và dễ làm sạch",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Vỏ gối",desc:"2–4 cái / phòng",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Ruột gối",desc:"2 cái / phòng",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Mền",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Tấm bảo vệ nệm (topper)",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Rèm",desc:"",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Đèn trần",desc:"3 ánh sáng",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Quạt trần",desc:"Có đèn (3 loại ánh sáng), 1 cái / phòng",link:"",note:"kiểm tra việc vệ sinh",qty:1},
+  {group:"Phòng ngủ",name:"Ổ cắm đầu giường",desc:"2 ổ, 2 bên",link:"",note:"",qty:2},
+  {group:"Phòng ngủ",name:"Ổ cắm bàn làm việc",desc:"",link:"",note:"",qty:1},
+  {group:"Phòng ngủ",name:"Điều hòa",desc:"Không phả gió vào người khi ngủ, 1 cái / phòng",link:"",note:"kiểm tra bao lâu cần vệ sinh? phí ntn",qty:1},
+  {group:"Phòng ngủ",name:"Ổ cắm gần cửa ra vào",desc:"Cân nhắc",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Bồn cầu",desc:"Loại dễ vệ sinh, phụ kiện phổ thông, 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Lô giấy vệ sinh",desc:"Loại có nắp. Test rút giấy được, 1 cái / phòng",link:"",note:"vị trí đặt phía trước, không phải phía sau người ngồi",qty:1},
+  {group:"Phòng tắm",name:"Vòi xịt",desc:"Điều chỉnh được (không quá mạnh/yếu), 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Lavabo",desc:"Treo tường hoặc có tủ (tủ chất liệu gì?), 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Vòi lavabo",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Gương lavabo",desc:"Có đèn không? 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Ổ cắm",desc:"Cho máy sấy tóc, cạo râu",link:"",note:"cạnh lavabo",qty:1},
+  {group:"Phòng tắm",name:"Sen tắm",desc:"Sen cây hoặc sen tường. Ưu tiên bền. 202 & 302 nên có vòi sen đầu",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Vách kính tắm",desc:"",link:"",note:"lắp đặt thấp hơn cốt để nước không tràn",qty:1},
+  {group:"Phòng tắm",name:"Phễu thu sàn",desc:"Van 1 chiều chống côn trùng và mùi",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Bình nóng lạnh",desc:"202 & 302 đảm bảo đủ nước nóng cho bồn tắm, 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Móc treo khăn",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Thanh treo khăn",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Kệ để đồ tắm",desc:"Khung đã xây sẵn, trong khu vực tắm",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Chổi cọ toilet",desc:"Sắp xếp chỗ bỏ",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Thùng rác nhỏ",desc:"Có nắp, có đạp chân, 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Quạt",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Quạt hút mùi",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Phòng tắm",name:"Máy giặt sấy 2in1",desc:"1 cái / phòng",link:"https://www.dienmayxanh.com/may-giat/may-giat-say-toshiba-inverter-giat-10-5-kg-say-7-kg-twd-t21bu115uwv-mg",note:"",qty:1},
+  {group:"Phòng tắm",name:"Khăn tắm",desc:"2 cái",link:"",note:"thuê ngắn hạn",qty:2},
+  {group:"Phòng tắm",name:"Khăn mặt",desc:"2 cái",link:"",note:"thuê ngắn hạn",qty:2},
+  {group:"Phòng tắm",name:"Thảm chân",desc:"1 cái",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Phòng tắm",name:"Dầu gội / sữa tắm",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Tủ bếp dưới",desc:"Chống ẩm, dễ lau dọn. Chia ngăn hợp lý",link:"",note:"bản lề giảm chấn",qty:1},
+  {group:"Bếp",name:"Ray kéo",desc:"Nên có thay vì chỉ mở cửa",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Thanh ngang phía trên",desc:"Để đồ & trang trí",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Mặt bếp",desc:"Xây hay mặt đá?",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Chống bắn dầu",desc:"Gương? Gạch?",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Thùng rác",desc:"Treo hoặc dưới đất",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Kệ để gia vị",desc:"Nếu có thể làm hộc mở khi xây tường",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Chậu rửa",desc:"1 chậu lớn có chậu nhỏ trượt, 1 cái / phòng",link:"",note:"đảm bảo nước chảy xuôi khi lắp đặt",qty:1},
+  {group:"Bếp",name:"Vòi rửa",desc:"Ưu tiên có thể kéo đầu, 1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Bếp từ",desc:"1 cái / phòng",link:"",note:"Sunhouse, Kangaroo?",qty:1},
+  {group:"Bếp",name:"Máy hút mùi",desc:"1 cái / phòng",link:"",note:"Sunhouse?",qty:1},
+  {group:"Bếp",name:"Tủ lạnh",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Lò vi sóng",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Máy lọc nước RO",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Bình siêu tốc",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Kệ úp chén",desc:"Như cái Jonathan mua",link:"",note:"",qty:1},
+  {group:"Bếp",name:"Ổ cắm bếp",desc:"2 hoặc 4 ổ",link:"",note:"",qty:2},
+  {group:"Bếp",name:"Nồi",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Chảo",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Thớt",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Dao",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Muỗng / đũa / nĩa",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Chén / dĩa / tô",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Ly",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Rổ",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bếp",name:"Khăn lau bếp",desc:"",link:"",note:"thuê ngắn hạn",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Bàn ăn + làm việc",desc:"4 ghế, có thể có hộc tiết kiệm diện tích",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Ổ cắm làm việc",desc:"Gần bàn để dùng",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Tủ giày",desc:"Nếu có",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Ổ cắm gần cửa",desc:"Để khách có thể cắm máy hút bụi / đèn đứng",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Gương toàn thân",desc:"Cho không gian rộng",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Vài thanh gỗ ngang",desc:"Trang trí / để cây",link:"",note:"cao vừa để dễ vệ sinh",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Quạt trần",desc:"Có đèn (3 loại ánh sáng), 1 cái / phòng",link:"",note:"kiểm tra việc vệ sinh",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Đèn highlight bàn ăn",desc:"Nếu có",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Tranh treo tường",desc:"Trang trí",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Cây xanh",desc:"Nhỏ, dễ chăm sóc",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Rèm cửa",desc:"",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Móc treo áo, mũ",desc:"",link:"",note:"",qty:1},
+  {group:"Bàn ăn & phòng khách",name:"Điều hòa",desc:"1 cái / phòng",link:"",note:"",qty:1},
+  {group:"Chung / khác",name:"Bảng tên nhà",desc:"Chất liệu",link:"",note:"",qty:1},
+  {group:"Chung / khác",name:"Camera",desc:"Bao nhiêu cái? Đặt ở đâu",link:"",note:"",qty:1},
+  {group:"Chung / khác",name:"Thùng rác vệ sinh chung",desc:"",link:"",note:"xác định chỗ để hợp lý",qty:1},
+  {group:"Chung / khác",name:"Sơn tường",desc:"",link:"",note:"sơn mảng nhấn đầu giường",qty:1},
+  {group:"Chung / khác",name:"Gạch nền",desc:"",link:"",note:"",qty:1},
+  {group:"Chung / khác",name:"Gạch nhà vệ sinh",desc:"",link:"",note:"",qty:1},
+  {group:"Chung / khác",name:"Gạch trang trí",desc:"",link:"",note:"",qty:1},
+];
+
 /* ---------------- state ---------------- */
 var S = { lang:'vi', view:'cmp', offers:[], chosen:{}, qty:{}, rate:{}, imp:{}, need:[],
           f:{cat:'',sup:'',item:'',q:'',pmin:'',pmax:'',install:false,delivery:false,vat:false,multi:false,onlyimp:false,sort:'cat'} };
@@ -393,7 +487,9 @@ function load(){
     var qt=localStorage.getItem('veday_qty'); if(qt) S.qty=JSON.parse(qt);
     var rt=localStorage.getItem('veday_rate'); if(rt) S.rate=JSON.parse(rt);
     var im=localStorage.getItem('veday_imp'); if(im) S.imp=JSON.parse(im);
-    var nd=localStorage.getItem('veday_need'); if(nd) S.need=JSON.parse(nd);
+    var nd=localStorage.getItem('veday_need');
+    if(nd){ S.need=JSON.parse(nd); }
+    else if(typeof NEED_SEED!=='undefined'){ S.need=NEED_SEED.map(function(x){ return Object.assign({},x); }); }
     var lg=localStorage.getItem('veday_lang'); if(lg) S.lang=lg;
   }catch(e){}
   if(!localStorage.getItem('veday_init_v2')){
@@ -663,7 +759,8 @@ function syncNeedQty(){ (S.need||[]).forEach(function(x){ needMatch(x.name).forE
 function addNeed(){
   var n=(document.getElementById('needName').value||'').trim(); if(!n) return;
   var q=parseFloat(document.getElementById('needQty').value)||1;
-  S.need.push({name:n, qty:q});
+  var eg=document.getElementById('needGroup'); var grp=eg?(eg.value||'').trim():'';
+  S.need.push({group:grp, name:n, desc:'', link:'', note:'', qty:q});
   document.getElementById('needName').value=''; document.getElementById('needQty').value=1;
   syncNeedQty(); save(); render();
 }
@@ -673,8 +770,8 @@ function setNeedQty(i,v){ var q=parseFloat(v)||1; S.need[i].qty=q; syncNeedQty()
 function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); }
 function viewNeed(i){ var x=S.need[i]; var m=needMatch(x.name); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
 function exportNeed(){
-  var rows=[['name','qty']];
-  (S.need||[]).forEach(function(x){ rows.push([x.name,x.qty]); });
+  var rows=[['group','name','desc','qty','link','note']];
+  (S.need||[]).forEach(function(x){ rows.push([x.group||'',x.name,x.desc||'',x.qty,x.link||'',x.note||'']); });
   dl('veday-danh-muc-can-mua-'+new Date().toISOString().slice(0,10)+'.csv','\ufeff'+rows.map(function(r){ return r.map(csvCell).join(','); }).join('\n'));
 }
 function renderNeed(){
@@ -682,63 +779,76 @@ function renderNeed(){
   var rows=S.need||[];
   var h='';
   h+='<div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">'
-    + '<input id="needName" placeholder="'+(vi?'Tên món cần mua…':'Item to buy…')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;min-width:220px;font-size:14px;">'
-    + '<input id="needQty" type="number" min="1" step="1" value="1" style="width:78px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">'
+    + '<input id="needName" placeholder="'+(vi?'Tên món cần mua…':'Item to buy…')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;min-width:200px;font-size:14px;">'
+    + '<input id="needGroup" placeholder="'+(vi?'Nhóm (vd: Phòng ngủ)':'Group')+'" style="padding:8px 10px;border:1px solid var(--line);border-radius:8px;width:160px;font-size:14px;">'
+    + '<input id="needQty" type="number" min="1" step="1" value="1" style="width:74px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:14px;">'
     + '<button class="btn" onclick="addNeed()">'+(vi?'➕ Thêm':'➕ Add')+'</button>'
     + '<button class="btn ghost" onclick="document.getElementById(\'needFile\').click()">'+(vi?'📥 Nhập CSV':'📥 Import CSV')+'</button>'
     + '<input type="file" id="needFile" accept=".csv" style="display:none" onchange="importNeedCSV(this)">'
     + '<button class="btn ghost" onclick="exportNeed()">'+(vi?'💾 Xuất CSV':'💾 Export CSV')+'</button>'
     + '<button class="btn ghost" onclick="clearNeed()">'+(vi?'🧹 Xóa hết':'🧹 Clear')+'</button>'
     + '</div>';
-  if(!rows.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b> (cần cột tên món &amp; số lượng).':'No shopping list yet. Add manually or <b>Import CSV</b> (needs a name &amp; quantity column).') +'</div>'; el.innerHTML=h; return; }
+  if(!rows.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b>.':'No shopping list yet. Add manually or <b>Import CSV</b>.') +'</div>'; el.innerHTML=h; return; }
   var matched=0; rows.forEach(function(x){ if(needMatch(x.name).length) matched++; });
   h+='<p class="mini" style="margin:0 0 8px;">'+ (vi?('Tổng '+rows.length+' món · '+matched+' đã có báo giá · '+(rows.length-matched)+' chưa có báo giá'):(rows.length+' items · '+matched+' with quotes · '+(rows.length-matched)+' without')) +'</p>';
-  h+='<div class="tblwrap"><table><thead><tr><th>#</th><th>'+ (vi?'Tên món':'Item') +'</th><th class="num">'+ (vi?'SL cần mua':'Qty') +'</th><th>'+ (vi?'Tình trạng báo giá':'Quote status') +'</th><th class="noprint"></th></tr></thead><tbody>';
-  rows.forEach(function(x,i){
-    var keys=needMatch(x.name), status='';
-    if(keys.length){
-      var offs=S.offers.filter(function(o){ return keys.indexOf(itemKey(o))>=0; });
-      var b=bestOf(offs), mx=Math.max.apply(null, offs.map(tot)), bt=tot(b);
-      status='<span class="tag">'+offs.length+' '+(vi?'báo giá':'quotes')+'</span> '+(vi?'rẻ nhất ':'from ')+money(b.price)+' <span class="mini">('+esc(b.supplier)+')</span>';
-      if(offs.length>1 && mx>bt) status+=' <span class="mini">· '+ (vi?'chênh ':'spread ')+money(mx-bt)+'</span>';
-    } else status='<span class="tag sample">⚠ '+(vi?'chưa có báo giá':'no quote yet')+'</span>';
-    h+='<tr><td>'+(i+1)+'</td>'
-      +'<td><b>'+esc(x.name)+'</b></td>'
-      +'<td class="num"><input class="qin" type="number" min="1" value="'+x.qty+'" data-need="'+i+'"></td>'
-      +'<td>'+status+'</td>'
-      +'<td class="noprint c">'+(keys.length?'<button class="btn tiny ghost" onclick="viewNeed('+i+')">'+(vi?'Xem':'View')+'</button> ':'')+'<button class="btn tiny ghost" onclick="delNeed('+i+')">✖</button></td></tr>';
+  h+='<div class="tblwrap needwrap"><table><thead><tr><th>#</th><th>'+ (vi?'Tên món':'Item') +'</th><th class="num">'+ (vi?'SL':'Qty') +'</th><th>'+ (vi?'Tình trạng báo giá':'Quote status') +'</th><th class="noprint"></th></tr></thead><tbody>';
+  var order=[], map={};
+  rows.forEach(function(x){ var g=x.group||''; if(!map[g]){ map[g]=[]; order.push(g); } map[g].push(x); });
+  order.forEach(function(g){
+    h+='<tr class="grouphdr"><td colspan="5">'+esc(g||(vi?'(chưa xếp nhóm)':'(no group)'))+'</td></tr>';
+    map[g].forEach(function(x){
+      var i=rows.indexOf(x);
+      var keys=needMatch(x.name), status='';
+      if(keys.length){
+        var offs=S.offers.filter(function(o){ return keys.indexOf(itemKey(o))>=0; });
+        var b=bestOf(offs), mx=Math.max.apply(null, offs.map(tot)), bt=tot(b);
+        status='<span class="tag">'+offs.length+' '+(vi?'báo giá':'quotes')+'</span> '+(vi?'rẻ nhất ':'from ')+money(b.price)+' <span class="mini">('+esc(b.supplier)+')</span>';
+        if(offs.length>1 && mx>bt) status+=' <span class="mini">· '+ (vi?'chênh ':'spread ')+money(mx-bt)+'</span>';
+      } else status='<span class="tag sample">⚠ '+(vi?'chưa có báo giá':'no quote yet')+'</span>';
+      h+='<tr><td>'+(i+1)+'</td>'
+        +'<td><b>'+esc(x.name)+'</b>'
+          +(x.desc?'<div class="mini">'+esc(x.desc)+'</div>':'')
+          +(x.note?'<div class="mini" style="color:var(--gold);">✎ '+esc(x.note)+'</div>':'')
+          +(x.link?' <a class="lbtn noprint" target="_blank" rel="noopener" href="'+attr(x.link)+'">🔗 '+(vi?'Nơi mua':'Link')+'</a>':'')
+        +'</td>'
+        +'<td class="num"><input class="qin" type="number" min="1" value="'+x.qty+'" data-need="'+i+'"></td>'
+        +'<td>'+status+'</td>'
+        +'<td class="noprint c">'+(keys.length?'<button class="btn tiny ghost" onclick="viewNeed('+i+')">'+(vi?'Xem':'View')+'</button> ':'')+'<button class="btn tiny ghost" onclick="delNeed('+i+')">✖</button></td></tr>';
+    });
   });
   h+='</tbody></table></div>';
   el.innerHTML=h; bindNeedInputs(el);
 }
+function leadQty(s){ var m=String(s||'').match(/^\s*(\d+)\s*(cái|chiếc|chiec|cai|bộ|bo|ổ|o)\b/i); return m?+m[1]:0; }
 function importNeedCSV(input){
   var f=input.files[0]; if(!f) return;
   var r=new FileReader();
   r.onload=function(){
     var rows=parseCSV(r.result); if(!rows.length){ input.value=''; return; }
-    var head=rows[0].map(function(x){ return String(x).toLowerCase(); });
-    var nameKeys=['tên','ten','hạng mục','hang muc','item','name','nội thất','noi that','chi tiết','chi tiet','mô tả','mo ta','sản phẩm','san pham','thiết bị','thiet bi'];
-    var qtyKeys=['sl','số lượng','so luong','qty','quantity','số lg','so lg'];
-    var nameIdx=-1, qtyIdx=-1;
-    for(var i=0;i<head.length;i++){
-      if(nameIdx<0 && nameKeys.some(function(k){ return head[i].indexOf(k)>=0; })) nameIdx=i;
-      if(qtyIdx<0 && qtyKeys.some(function(k){ return head[i].indexOf(k)>=0; })) qtyIdx=i;
-    }
-    var start=0;
-    if(nameIdx>=0||qtyIdx>=0) start=1;
-    if(nameIdx<0) nameIdx=1;
-    var added=0;
-    for(var ri=start; ri<rows.length; ri++){
+    var nameKeys=['món đồ','mon do','tên','ten','hạng mục','hang muc','item','name','sản phẩm','san pham','thiết bị','thiet bi','nội thất','noi that','chi tiết','chi tiet'];
+    var descKeys=['miêu tả','mieu ta','mô tả','mo ta','mota','description','chi tiết','chi tiet','diễn giải','dien giai'];
+    var linkKeys=['nơi mua','noi mua','link','url','website','nguồn','nguon'];
+    var noteKeys=['lưu ý','luu y','ghi chú','ghi chu','note'];
+    var qtyKeys=['sl','số lượng','so luong','qty','quantity'];
+    function idxOf(keys,head){ for(var i=0;i<head.length;i++){ for(var k=0;k<keys.length;k++){ if(head[i].indexOf(keys[k])>=0) return i; } } return -1; }
+    var head=rows[0].map(function(x){ return String(x).toLowerCase().trim(); });
+    var nameIdx=idxOf(nameKeys,head); if(nameIdx<0) nameIdx=0;
+    var descIdx=idxOf(descKeys,head), linkIdx=idxOf(linkKeys,head), noteIdx=idxOf(noteKeys,head), qtyIdx=idxOf(qtyKeys,head);
+    var isHeader=function(cells){ var c0=String((cells[0]||'')).toLowerCase().trim(); return nameKeys.indexOf(c0)>=0; };
+    var groupN=0, curGroup='', added=0;
+    for(var ri=0; ri<rows.length; ri++){
       var c=rows[ri]; if(!c || c.join('').trim()==='') continue;
-      var name=(c[nameIdx]||'').trim();
+      if(isHeader(c)){ groupN++; curGroup=(L()==='vi'?'Nhóm ':'Group ')+groupN; continue; }
+      var name=String(c[nameIdx]||'').trim();
       if(!name){ for(var j=0;j<c.length;j++){ var v=String(c[j]||'').trim(); if(v && isNaN(v.replace(/[.,]/g,''))){ name=v; break; } } }
       if(!name) continue;
       if(/^(tổng|cộng|sum|total|stt)\b/i.test(name)) continue;
-      var q= qtyIdx>=0 ? parseFloat(String(c[qtyIdx]||'').replace(/[^0-9.]/g,'')) : NaN;
-      if(!(q>0)) q=1;
-      S.need.push({name:name, qty:q}); added++;
+      var q = qtyIdx>=0 ? parseFloat(String(c[qtyIdx]||'').replace(/[^0-9.]/g,'')) : NaN;
+      if(!(q>0)) q = leadQty(descIdx>=0?c[descIdx]:'') || 1;
+      S.need.push({group:curGroup, name:name.trim(), desc:String(descIdx>=0?(c[descIdx]||''):'').trim(), link:String(linkIdx>=0?(c[linkIdx]||''):'').trim(), note:String(noteIdx>=0?(c[noteIdx]||''):'').trim(), qty:q});
+      added++;
     }
-    syncNeedQty(); save(); render();
+    save(); render();
     alert((L()==='vi'?'Đã nhập ':'Imported ')+added+(L()==='vi'?' dòng vào danh mục cần mua.':' rows into the shopping list.'));
     input.value='';
   };
