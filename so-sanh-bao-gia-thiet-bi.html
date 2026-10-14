@@ -534,6 +534,13 @@ function load(){
   if(!localStorage.getItem('veday_init_v2')){
     S.offers = INGESTED.map(mk); localStorage.setItem('veday_init_v2','1'); save();
   }
+  /* merge: add any new seed quotes missing from the saved list (by supplier|item count) */
+  if(typeof INGESTED!=='undefined'){
+    var sig=function(o){ return (o.supplier||'')+'|'+(o.item||''); };
+    var have={}; S.offers.forEach(function(o){ var k=sig(o); have[k]=(have[k]||0)+1; });
+    var want={};
+    INGESTED.forEach(function(sp){ var k=sig(sp); want[k]=(want[k]||0)+1; if(want[k]>(have[k]||0)) S.offers.push(mk(sp)); });
+  }
 }
 function save(){
   localStorage.setItem('veday_quotes', JSON.stringify(S.offers));
