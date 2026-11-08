@@ -431,6 +431,7 @@ var INGESTED = [
   {cat:"vs",item:"Bộ vòi sen đứng nóng lạnh",spec:"",unit:"bộ",qty:1,supplier:"Kim Loan",model:"S578C",price:3180000,install:false,delivery:false,vat:false,warranty:0,note:"",source:"manual"},
   {cat:"vs",item:"Vòi Lavabo",spec:"",unit:"cái",qty:1,supplier:"Kim Loan",model:"Caesar B551CU",price:1400000,install:false,delivery:false,vat:false,warranty:0,note:"",source:"pdf"},
   {cat:"vs",item:"Chậu rửa lavabo",spec:"",unit:"cái",qty:1,supplier:"Kim Loan",model:"Inax AL-445V",price:2040000,install:false,delivery:false,vat:false,warranty:0,note:"",source:"manual"},
+  {cat:"bedding",item:"Nệm",spec:"Lò xo túi độc lập, dày 17cm, 160x200",unit:"cái",qty:1,supplier:"Amando (online)",model:"Amando Eco 17cm",price:4999000,install:false,delivery:false,vat:false,warranty:0,note:"Ảnh web 08/11/2026: Flash sale 4.999.000 (giá gốc 6.900.000, -28%); size 160x200, dày 17cm; SKU 10204980; đánh giá 4.9/5 (55); mã giảm thêm 190k (đơn ≥4tr)/150k (≥3tr)/5% khi thanh toán",source:"photo"},
 ];
 
 /* ---- default shopping list (from 'xây nhà PCT - Nội thất chi tiết') ---- */
@@ -809,7 +810,8 @@ function sumLines(lines){ return lines.reduce(function(a,x){ return a+tot(x.o); 
 
 /* ---------------- shopping list (danh mục cần mua) ---------------- */
 function normName(x){ return String(x||'').toLowerCase().replace(/đ/g,'d').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim(); }
-var NEED_ALIAS={}; NEED_ALIAS[normName('Mền')]=['Vỏ chăn','Ruột chăn'];
+var NEED_ALIAS={}; NEED_ALIAS[normName('Mền')]=['Vỏ chăn','Ruột chăn']; NEED_ALIAS[normName('Lavabo')]=['Chậu rửa lavabo','Chậu lavabo','Chậu rửa mặt']; NEED_ALIAS[normName('Sen tắm')]=['Bộ vòi sen đứng nóng lạnh','Bộ sen tắm','Sen cây'];
+try{ var _ua=JSON.parse(localStorage.getItem('veday_alias')||'{}'); Object.keys(_ua).forEach(function(k){ NEED_ALIAS[k]=(NEED_ALIAS[k]||[]).concat(_ua[k]); }); }catch(e){}
 function needKeys(x){
   var names=[x.name].concat(x.alias||[]).concat(NEED_ALIAS[normName(x.name)]||[]); var hits=[];
   names.forEach(function(nm){
@@ -838,6 +840,16 @@ function setRooms(v){ S.rooms=Math.max(1, parseInt(v)||1); save(); render(); }
 function setOrdered(i,v){ S.need[i].ordered=!!v; save(); render(); }
 function setNfilter(v){ S.nfilter=v; render(); }
 function bindNeedFilter(root){ var s=root.querySelector('#needFilter'); if(s) s.addEventListener('change', function(){ setNfilter(s.value); }); }
+function mergeNames(){ var A=document.getElementById('aliasA'), B=document.getElementById('aliasB'); if(!A||!B) return; addAlias(A.value,B.value); }
+function addAlias(a,b){ a=(a||'').trim(); b=(b||'').trim(); if(!a||!b||normName(a)===normName(b)) return;
+  var ka=normName(a), kb=normName(b);
+  NEED_ALIAS[ka]=NEED_ALIAS[ka]||[]; if(NEED_ALIAS[ka].indexOf(b)<0) NEED_ALIAS[ka].push(b);
+  NEED_ALIAS[kb]=NEED_ALIAS[kb]||[]; if(NEED_ALIAS[kb].indexOf(a)<0) NEED_ALIAS[kb].push(a);
+  var saved={}; try{ saved=JSON.parse(localStorage.getItem('veday_alias')||'{}'); }catch(e){}
+  function put(k,v){ saved[k]=saved[k]||[]; if(saved[k].indexOf(v)<0) saved[k].push(v); }
+  put(ka,b); put(kb,a);
+  localStorage.setItem('veday_alias', JSON.stringify(saved));
+  save(); render(); }
 function bindNeedInputs(root){ Array.prototype.forEach.call(root.querySelectorAll('input.qin[data-need]'), function(inp){ inp.addEventListener('change', function(){ setNeedQty(+inp.getAttribute('data-need'), inp.value); }); }); Array.prototype.forEach.call(root.querySelectorAll('input[type=checkbox][data-order]'), function(cb){ cb.addEventListener('change', function(){ setOrdered(+cb.getAttribute('data-order'), cb.checked); }); }); }
 function viewNeed(i){ var x=S.need[i]; var m=needKeys(x); if(!m.length) return; var o=S.offers.filter(function(y){ return itemKey(y)===m[0]; })[0]; S.view='cmp'; if(o) S.f.item=o.item; save(); render(); var v=document.getElementById('view'); if(v&&v.scrollIntoView) v.scrollIntoView({behavior:'smooth'}); }
 function exportNeed(){
@@ -851,6 +863,7 @@ function renderNeed(){
   var all=S.need||[]; var N=S.rooms||6;
   var matched=0, orderedN=0; all.forEach(function(x){ if(needKeys(x).length) matched++; if(x.ordered) orderedN++; });
   var rows=all.filter(function(x){ if(S.nfilter==='yes') return !!x.ordered; if(S.nfilter==='no') return !x.ordered; return true; });
+  var nameSet={}; all.forEach(function(x){ if(x.name) nameSet[x.name]=1; (x.alias||[]).forEach(function(z){ if(z) nameSet[z]=1; }); }); S.offers.forEach(function(o){ if(o.item) nameSet[o.item]=1; });
   var sumEl=document.getElementById('needSummary');
   if(sumEl) sumEl.textContent=(vi?'\ud83d\udccb Danh mục cần mua — ':'\ud83d\udccb Shopping list — ')+all.length+(vi?' món · ':' items · ')+matched+(vi?' có báo giá':' with quotes')+(orderedN?' · '+orderedN+(vi?' đã đặt':' ordered'):'');
   var h='';
@@ -865,7 +878,14 @@ function renderNeed(){
     + '<input type="file" id="needFile" accept=".csv" style="display:none" onchange="importNeedCSV(this)">'
     + '<button class="btn ghost" onclick="exportNeed()">'+(vi?'💾 Xuất CSV':'💾 Export CSV')+'</button>'
     + '<button class="btn ghost" onclick="clearNeed()">'+(vi?'🧹 Xóa hết':'🧹 Clear')+'</button>'
-    + '</div>';
+    + '</div>'
+    + '<div class="noprint" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;background:#f7faf8;border:1px dashed var(--line);border-radius:8px;padding:8px;">'
+      + '<span class="mini">🔗 '+(vi?'Ghép 2 tên = cùng 1 món (khi tên NCC khác tên danh mục):':'Merge 2 names (supplier name ≠ list name):')+'</span>'
+      + '<input id="aliasA" list="allNames" placeholder="'+(vi?'Tên A':'Name A')+'" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;width:180px;">'
+      + '<input id="aliasB" list="allNames" placeholder="'+(vi?'Tên B':'Name B')+'" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:13px;width:180px;">'
+      + '<button class="btn tiny" onclick="mergeNames()">'+(vi?'Ghép':'Merge')+'</button>'
+    + '</div>'
+    + '<datalist id="allNames">'+Object.keys(nameSet).sort().map(function(n){ return '<option value="'+esc(n)+'">'; }).join('')+'</datalist>';
   if(!all.length){ h+='<div class="empty">'+ (vi?'Chưa có danh mục cần mua. Thêm tay hoặc <b>Nhập CSV</b>.':'No shopping list yet. Add manually or <b>Import CSV</b>.') +'</div>'; el.innerHTML=h; bindNeedInputs(el); bindNeedFilter(el); return; }
   if(!rows.length){ h+='<div class="empty">'+ (vi?'Không có món nào khớp bộ lọc.':'No items match the filter.') +'</div>'; el.innerHTML=h; bindNeedInputs(el); bindNeedFilter(el); return; }
   h+='<p class="mini" style="margin:0 0 8px;">'+ (vi?('Hiển thị '+rows.length+'/'+all.length+' món · '+matched+' có báo giá · '+orderedN+' đã đặt · cột “Tổng” cho '+N+' phòng'):('Showing '+rows.length+'/'+all.length+' items · '+matched+' with quotes · '+orderedN+' ordered · “Total” for '+N+' rooms')) + (S.nfilter!=='all'?' · <b>'+(vi?'đang lọc':'filtered')+': '+(S.nfilter==='yes'?(vi?'đã đặt':'ordered'):(vi?'chưa đặt':'not ordered'))+'</b>':'') +'</p>';
