@@ -638,7 +638,7 @@ function filtered(){
     if(f.pmin!=='' && o.price < +f.pmin) return false;
     if(f.pmax!=='' && o.price > +f.pmax) return false;
     if(f.onlyimp && !S.imp[itemKey(o)]) return false;
-    if(q){ var hay=((o.item||'')+' '+(o.supplier||'')+' '+(o.model||'')+' '+(o.spec||'')).toLowerCase(); if(hay.indexOf(q)<0) return false; }
+    if(q){ var hay=((o.item||'')+' '+tr(o.item||'')+' '+(o.supplier||'')+' '+(o.model||'')+' '+(o.spec||'')+' '+tr(o.spec||'')).toLowerCase(); if(hay.indexOf(q)<0) return false; }
     return true;
   });
 }
